@@ -18,7 +18,7 @@ public class SdkServer extends BaseServer {
 
     public SdkServer(SnowFlake snowFlake) {
         this.snowFlake = snowFlake;
-        this.port = Constants.SDKS_PORT;
+        this.port = "".equals(Constants.getEnv("SDKS_PORT")) ? Constants.SDKS_PORT : Integer.valueOf(Constants.getEnv("SDKS_PORT"));
     }
 
     @Override

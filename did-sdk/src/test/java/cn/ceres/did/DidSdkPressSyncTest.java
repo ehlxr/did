@@ -6,8 +6,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * 同步请求压测
  *
@@ -19,7 +17,7 @@ public class DidSdkPressSyncTest {
 
     @Test
     public void pressSyncTest() throws Exception {
-        SdkClient client = new SdkClient();
+        SdkClient client = new SdkClient("10.19.248.200",30581);
         client.init();
         client.start();
 
@@ -43,8 +41,8 @@ public class DidSdkPressSyncTest {
             logger.info("invokeSync test num is: {}, cast time: {} millsec, throughput: {} send/millsec", NUM, cast, (double) NUM / cast);
 
             amount += NUM;
-            NUM += 5000;
-            TimeUnit.SECONDS.sleep(2);
+            // NUM += 5000;
+            // TimeUnit.SECONDS.sleep(2);
         }
 
         logger.info("invokeSync test all num is: {}, all cast time: {} millsec, all throughput: {} send/millsec", amount, allcast, (double) amount / allcast);

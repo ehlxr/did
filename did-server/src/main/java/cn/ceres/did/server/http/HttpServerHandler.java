@@ -39,25 +39,25 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         String uri = getUriNoSprit(request);
         logger.info("request uri is: {}", uri);
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        if (Constants.HTTP_REQUEST.equals(uri)) {
-            if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
-                try {
-                    long id = snowFlake.nextId();
-                    logger.info("HttpServerHandler id is: {}", id);
-                    response.content().writeBytes(("" + id).getBytes());
-                } catch (Exception e) {
-                    semaphore.release();
-                    logger.error("HttpServerHandler error", e);
-                }
-            } else {
-                String info = String.format("HttpServerHandler tryAcquire semaphore timeout, %dms, waiting thread " + "nums: %d availablePermit: %d",
-                        Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
-                logger.warn(info);
-                throw new Exception(info);
+        // if (Constants.HTTP_REQUEST.equals(uri)) {
+        if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
+            try {
+                long id = snowFlake.nextId();
+                logger.info("HttpServerHandler id is: {}", id);
+                response.content().writeBytes(("" + id).getBytes());
+            } catch (Exception e) {
+                semaphore.release();
+                logger.error("HttpServerHandler error", e);
             }
         } else {
-            response.content().writeBytes(("Unsupported uri: " + uri).getBytes());
+            String info = String.format("HttpServerHandler tryAcquire semaphore timeout, %dms, waiting thread " + "nums: %d availablePermit: %d",
+                    Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
+            logger.warn(info);
+            throw new Exception(info);
         }
+        // } else {
+        //     response.content().writeBytes(("Unsupported uri: " + uri).getBytes());
+        // }
 
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }

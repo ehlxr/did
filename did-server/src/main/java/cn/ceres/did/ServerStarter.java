@@ -17,7 +17,7 @@ public class ServerStarter {
 
     public static void main(String[] args) {
         long datacenterId = Constants.DATACENTER_ID;
-        long machineId = Constants.MACHINES_SIGN;
+        long machineId = Constants.MACHINES_ID;
 
         if (args != null && args.length == 2) {
             datacenterId = Long.valueOf(args[0]);
@@ -25,7 +25,7 @@ public class ServerStarter {
         }
 
         datacenterId = "".equals(Constants.getEnv("DATACENTER_ID")) ? datacenterId : Long.valueOf(Constants.getEnv("DATACENTER_ID"));
-        machineId = "".equals(Constants.getEnv("MACHINES_SIGN")) ? machineId : Long.valueOf(Constants.getEnv("MACHINES_SIGN"));
+        machineId = "".equals(Constants.getEnv("MACHINES_ID")) ? machineId : Long.valueOf(Constants.getEnv("MACHINES_ID"));
         logger.info("SnowFlake datacenterId is: {}, machineId is: {}", datacenterId, machineId);
 
         final SnowFlake snowFlake = new SnowFlake(datacenterId, machineId);

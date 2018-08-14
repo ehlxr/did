@@ -13,11 +13,11 @@ import java.util.concurrent.TimeUnit;
  * @author ehlxr
  */
 public class DidSdkTest {
-    private static final int NUM = 100;
+    private static final int NUM = 10;
 
     @Test
     public void didSdkTest() throws Exception {
-        SdkClient client = new SdkClient();
+        SdkClient client = new SdkClient("10.19.248.200", 30581);
         client.init();
         client.start();
 

@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 异步请求压测
@@ -23,7 +22,7 @@ public class DidSdkPressAsyncTest {
 
     @Test
     public void pressAsyncTest() throws Exception {
-        SdkClient client = new SdkClient();
+        SdkClient client = new SdkClient("10.19.248.200",30581);
         client.init();
         client.start();
 
@@ -46,15 +45,16 @@ public class DidSdkPressAsyncTest {
                 });
             }
 
+            // countDownLatch.await(10, TimeUnit.SECONDS);
+            countDownLatch.await();
             end = System.currentTimeMillis();
             cast = (end - start);
             allcast += cast;
-            countDownLatch.await(10, TimeUnit.SECONDS);
 
             logger.info("invokeAsync test num is: {}, cast time: {} millsec, throughput: {} send/millsec", NUM, cast, (double) NUM / cast);
             amount += NUM;
-            NUM = NUM + 5000;
-            TimeUnit.SECONDS.sleep(2);
+            // NUM = NUM + 5000;
+            // TimeUnit.SECONDS.sleep(2);
         }
 
         logger.info("invokeAsync test all num is: {}, all cast time: {} millsec, all throughput: {} send/millsec", amount, allcast, (double) amount / allcast);

@@ -25,7 +25,7 @@ public class HttpServer extends BaseServer {
 
     public HttpServer(SnowFlake snowFlake) {
         this.snowFlake = snowFlake;
-        this.port = Constants.HTTP_PORT;
+        this.port = "".equals(Constants.getEnv("HTTP_PORT")) ? Constants.HTTP_PORT : Integer.valueOf(Constants.getEnv("HTTP_PORT"));
     }
 
     @Override
