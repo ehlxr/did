@@ -1,5 +1,5 @@
-FROM 10.19.248.200:30100/g_laikang/jre8-alpine:latest
-MAINTAINER lixiangrong <lixiangrong@ennew.cn>
+FROM anapsix/alpine-java:latest
+MAINTAINER ehlxr <ehlxr.me@gmail.com>
 
 WORKDIR /opt
 
