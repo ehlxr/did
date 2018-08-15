@@ -17,7 +17,8 @@ public class DidSdkTest {
 
     @Test
     public void didSdkTest() throws Exception {
-        SdkClient client = new SdkClient("10.19.248.200", 30581);
+        // SdkClient client = new SdkClient("10.19.248.200", 30581);
+        SdkClient client = new SdkClient();
         client.init();
         client.start();
 
