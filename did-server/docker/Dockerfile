@@ -1,4 +1,4 @@
-FROM ehlxr/jre8-alpine:latest
+FROM java:8-jre-alpine
 MAINTAINER ehlxr <ehlxr.me@gmail.com>
 
 WORKDIR /opt
