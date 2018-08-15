@@ -2,3 +2,4 @@
 did.iml
 **/target/
 **/dependency-reduced-pom.xml
+did-server/docker
