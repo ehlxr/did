@@ -21,11 +21,11 @@ import java.net.InetSocketAddress;
  * @author ehlxr
  */
 public class HttpServer extends BaseServer {
-    private SnowFlake snowFlake;
+    private final SnowFlake snowFlake;
 
     public HttpServer(SnowFlake snowFlake) {
         this.snowFlake = snowFlake;
-        this.port = "".equals(Constants.getEnv("HTTP_PORT")) ? Constants.HTTP_PORT : Integer.valueOf(Constants.getEnv("HTTP_PORT"));
+        this.port = "".equals(Constants.getEnv("HTTP_PORT")) ? Constants.HTTP_PORT : Integer.parseInt(Constants.getEnv("HTTP_PORT"));
     }
 
     @Override

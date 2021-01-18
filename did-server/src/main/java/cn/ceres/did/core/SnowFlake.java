@@ -58,11 +58,11 @@ public class SnowFlake {
     /**
      * 数据中心
      */
-    private long datacenterId;
+    private final long datacenterId;
     /**
      * 机器标识
      */
-    private long machineId;
+    private final long machineId;
     /**
      * 序列号
      */

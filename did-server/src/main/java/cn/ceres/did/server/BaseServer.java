@@ -25,7 +25,7 @@ public abstract class BaseServer implements Server {
 
     public void init() {
         defLoopGroup = new DefaultEventLoopGroup(8, new ThreadFactory() {
-            private AtomicInteger index = new AtomicInteger(0);
+            private final AtomicInteger index = new AtomicInteger(0);
 
             @Override
             public Thread newThread(Runnable r) {
@@ -33,7 +33,7 @@ public abstract class BaseServer implements Server {
             }
         });
         bossGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
-            private AtomicInteger index = new AtomicInteger(0);
+            private final AtomicInteger index = new AtomicInteger(0);
 
             @Override
             public Thread newThread(Runnable r) {
@@ -41,7 +41,7 @@ public abstract class BaseServer implements Server {
             }
         });
         workGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 10, new ThreadFactory() {
-            private AtomicInteger index = new AtomicInteger(0);
+            private final AtomicInteger index = new AtomicInteger(0);
 
             @Override
             public Thread newThread(Runnable r) {

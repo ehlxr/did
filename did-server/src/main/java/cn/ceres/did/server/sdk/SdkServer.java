@@ -14,7 +14,7 @@ import java.net.InetSocketAddress;
  * @author ehlxr
  */
 public class SdkServer extends BaseServer {
-    private SnowFlake snowFlake;
+    private final SnowFlake snowFlake;
 
     public SdkServer(SnowFlake snowFlake) {
         this.snowFlake = snowFlake;

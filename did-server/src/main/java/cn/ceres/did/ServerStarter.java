@@ -20,12 +20,12 @@ public class ServerStarter {
         long machineId = Constants.MACHINES_ID;
 
         if (args != null && args.length == 2) {
-            datacenterId = Long.valueOf(args[0]);
-            machineId = Long.valueOf(args[1]);
+            datacenterId = Long.parseLong(args[0]);
+            machineId = Long.parseLong(args[1]);
         }
 
-        datacenterId = "".equals(Constants.getEnv("DATACENTER_ID")) ? datacenterId : Long.valueOf(Constants.getEnv("DATACENTER_ID"));
-        machineId = "".equals(Constants.getEnv("MACHINES_ID")) ? machineId : Long.valueOf(Constants.getEnv("MACHINES_ID"));
+        datacenterId = "".equals(Constants.getEnv("DATACENTER_ID")) ? datacenterId : Long.parseLong(Constants.getEnv("DATACENTER_ID"));
+        machineId = "".equals(Constants.getEnv("MACHINES_ID")) ? machineId : Long.parseLong(Constants.getEnv("MACHINES_ID"));
         logger.info("SnowFlake datacenterId is: {}, machineId is: {}", datacenterId, machineId);
 
         final SnowFlake snowFlake = new SnowFlake(datacenterId, machineId);

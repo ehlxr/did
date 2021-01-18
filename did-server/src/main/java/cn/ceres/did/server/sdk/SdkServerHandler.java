@@ -15,44 +15,44 @@ import java.util.concurrent.TimeUnit;
  *
  * @author ehlxr
  */
-public class SdkServerHandler extends SimpleChannelInboundHandler {
+public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
     private static final Logger logger = LoggerFactory.getLogger(SdkServerHandler.class);
     /**
      * 通过信号量来控制流量
      */
-    private Semaphore semaphore = new Semaphore(Constants.HANDLE_SDKS_TPS);
-    private SnowFlake snowFlake;
+    private final Semaphore semaphore = new Semaphore(Constants.HANDLE_SDKS_TPS);
+    private final SnowFlake snowFlake;
 
     SdkServerHandler(SnowFlake snowFlake) {
         this.snowFlake = snowFlake;
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof SdkProto) {
-            SdkProto sdkProto = (SdkProto) msg;
-            if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
-                try {
-                    sdkProto.setDid(snowFlake.nextId());
-                    ctx.channel().writeAndFlush(sdkProto).addListener(new ChannelFutureListener() {
-                        @Override
-                        public void operationComplete(ChannelFuture channelFuture) {
-                            semaphore.release();
-                        }
-                    });
-                } catch (Exception e) {
-                    semaphore.release();
-                    logger.error("SdkServerhandler error", e);
-                }
-            } else {
-                sdkProto.setDid(-1);
-                ctx.channel().writeAndFlush(sdkProto);
-                String info = String.format("SdkServerHandler tryAcquire semaphore timeout, %dms, waiting thread " + "nums: %d availablePermit: %d",
-                        Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
-                logger.warn(info);
-                throw new Exception(info);
+    protected void channelRead0(ChannelHandlerContext ctx, SdkProto sdkProto) throws Exception {
+        // if (msg instanceof SdkProto) {
+        //     SdkProto sdkProto = (SdkProto) msg;
+        if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
+            try {
+                sdkProto.setDid(snowFlake.nextId());
+                ctx.channel().writeAndFlush(sdkProto).addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture channelFuture) {
+                        semaphore.release();
+                    }
+                });
+            } catch (Exception e) {
+                semaphore.release();
+                logger.error("SdkServerhandler error", e);
             }
+        } else {
+            sdkProto.setDid(-1);
+            ctx.channel().writeAndFlush(sdkProto);
+            String info = String.format("SdkServerHandler tryAcquire semaphore timeout, %dms, waiting thread " + "nums: %d availablePermit: %d",
+                    Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
+            logger.warn(info);
+            throw new Exception(info);
         }
+        // }
     }
 
     @Override

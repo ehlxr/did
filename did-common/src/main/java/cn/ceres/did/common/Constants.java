@@ -6,7 +6,7 @@ import java.util.Map;
  * @author ehlxr
  */
 public class Constants {
-    private static Map<String, String> SYS_ENV = System.getenv();
+    private static final Map<String, String> SYS_ENV = System.getenv();
 
     public static String getEnv(String key) {
         return SYS_ENV.get(key) == null ? "" : SYS_ENV.get(key);
