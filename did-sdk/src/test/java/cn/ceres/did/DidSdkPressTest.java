@@ -23,7 +23,7 @@ public class DidSdkPressTest {
 
     @Before
     public void init() {
-        client = new SdkClient("10.19.248.200",30581);
+        client = new SdkClient("127.0.0.1",16831);
         // client = new SdkClient();
         client.init();
         client.start();
