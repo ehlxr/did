@@ -3,7 +3,10 @@ package cn.ceres.did.server.sdk;
 import cn.ceres.did.common.Constants;
 import cn.ceres.did.common.NettyUtil;
 import cn.ceres.did.core.SnowFlake;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,12 +37,7 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
         if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
             try {
                 sdkProto.setDid(snowFlake.nextId());
-                ctx.channel().writeAndFlush(sdkProto).addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture channelFuture) {
-                        semaphore.release();
-                    }
-                });
+                ctx.channel().writeAndFlush(sdkProto).addListener((ChannelFutureListener) channelFuture -> semaphore.release());
             } catch (Exception e) {
                 semaphore.release();
                 logger.error("SdkServerhandler error", e);

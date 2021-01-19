@@ -1,7 +1,5 @@
 package cn.ceres.did;
 
-import cn.ceres.did.client.InvokeCallback;
-import cn.ceres.did.client.ResponseFuture;
 import cn.ceres.did.client.SdkClient;
 import cn.ceres.did.sdk.SdkProto;
 import org.junit.Test;
@@ -36,13 +34,10 @@ public class DidSdkTest {
         for (int i = 0; i < NUM; i++) {
             final SdkProto sdkProto = new SdkProto();
             final int finalI = i;
-            client.invokeAsync(sdkProto, 2000, new InvokeCallback() {
-                @Override
-                public void operationComplete(ResponseFuture responseFuture) {
-                    System.out.println(finalI + " sendProto: " + sdkProto.toString());
-                    countDownLatch.countDown();
-                    System.out.println(finalI + " resultProto: " + responseFuture.getSdkProto().toString());
-                }
+            client.invokeAsync(sdkProto, 2000, responseFuture -> {
+                System.out.println(finalI + " sendProto: " + sdkProto.toString());
+                countDownLatch.countDown();
+                System.out.println(finalI + " resultProto: " + responseFuture.getSdkProto().toString());
             });
         }
         countDownLatch.await(10, TimeUnit.SECONDS);

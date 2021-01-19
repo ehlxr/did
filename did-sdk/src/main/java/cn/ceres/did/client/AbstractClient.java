@@ -1,7 +1,7 @@
 package cn.ceres.did.client;
 
-import cn.ceres.did.sdk.SdkProto;
 import cn.ceres.did.common.NettyUtil;
+import cn.ceres.did.sdk.SdkProto;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author ehlxr
  */
 public abstract class AbstractClient implements Client {
-    private Logger logger = LoggerFactory.getLogger(AbstractClient.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractClient.class);
 
     private final Semaphore asyncSemaphore = new Semaphore(100000);
     private final Semaphore onewaySemaphore = new Semaphore(100000);
@@ -30,7 +30,7 @@ public abstract class AbstractClient implements Client {
     public void init() {
         asyncResponse = new ConcurrentHashMap<>(16);
         workGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 10, new ThreadFactory() {
-            private AtomicInteger index = new AtomicInteger(0);
+            private final AtomicInteger index = new AtomicInteger(0);
 
             @Override
             public Thread newThread(Runnable r) {
@@ -57,20 +57,17 @@ public abstract class AbstractClient implements Client {
             try {
                 final ResponseFuture responseFuture = new ResponseFuture(rqid, timeoutMillis, null, null);
                 asyncResponse.put(rqid, responseFuture);
-                channel.writeAndFlush(sdkProto).addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture channelFuture) {
-                        if (channelFuture.isSuccess()) {
-                            //发送成功后立即跳出
-                            responseFuture.setIsSendStateOk(true);
-                            return;
-                        }
-                        // 代码执行到此说明发送失败，需要释放资源
-                        asyncResponse.remove(rqid);
-                        responseFuture.putResponse(null);
-                        responseFuture.setCause(channelFuture.cause());
-                        logger.warn("send a request command to channel <" + NettyUtil.parseRemoteAddr(channel) + "> failed.");
+                channel.writeAndFlush(sdkProto).addListener((ChannelFutureListener) channelFuture -> {
+                    if (channelFuture.isSuccess()) {
+                        //发送成功后立即跳出
+                        responseFuture.setIsSendStateOk(true);
+                        return;
                     }
+                    // 代码执行到此说明发送失败，需要释放资源
+                    asyncResponse.remove(rqid);
+                    responseFuture.putResponse(null);
+                    responseFuture.setCause(channelFuture.cause());
+                    logger.warn("send a request command to channel <" + NettyUtil.parseRemoteAddr(channel) + "> failed.");
                 });
                 // 阻塞等待响应
                 SdkProto resultProto = responseFuture.waitResponse(timeoutMillis);
@@ -104,27 +101,24 @@ public abstract class AbstractClient implements Client {
                 final ResponseFuture responseFuture = new ResponseFuture(rqid, timeoutMillis, invokeCallback, asyncSemaphore);
                 asyncResponse.put(rqid, responseFuture);
                 try {
-                    channelFuture.channel().writeAndFlush(sdkProto).addListener(new ChannelFutureListener() {
-                        @Override
-                        public void operationComplete(ChannelFuture channelFuture) {
-                            if (channelFuture.isSuccess()) {
-                                responseFuture.setIsSendStateOk(true);
-                                return;
-                            }
-                            // 代码执行到些说明发送失败，需要释放资源
-                            asyncResponse.remove(rqid);
-                            responseFuture.setCause(channelFuture.cause());
-                            responseFuture.putResponse(null);
-
-                            try {
-                                responseFuture.executeInvokeCallback();
-                            } catch (Exception e) {
-                                logger.warn("excute callback in writeAndFlush addListener, and callback throw", e);
-                            } finally {
-                                responseFuture.release();
-                            }
-                            logger.warn("send a request command to channel <" + NettyUtil.parseRemoteAddr(channel) + "> failed.", channelFuture.cause());
+                    channelFuture.channel().writeAndFlush(sdkProto).addListener((ChannelFutureListener) channelFuture -> {
+                        if (channelFuture.isSuccess()) {
+                            responseFuture.setIsSendStateOk(true);
+                            return;
                         }
+                        // 代码执行到些说明发送失败，需要释放资源
+                        asyncResponse.remove(rqid);
+                        responseFuture.setCause(channelFuture.cause());
+                        responseFuture.putResponse(null);
+
+                        try {
+                            responseFuture.executeInvokeCallback();
+                        } catch (Exception e) {
+                            logger.warn("excute callback in writeAndFlush addListener, and callback throw", e);
+                        } finally {
+                            responseFuture.release();
+                        }
+                        logger.warn("send a request command to channel <" + NettyUtil.parseRemoteAddr(channel) + "> failed.", channelFuture.cause());
                     });
                 } catch (Exception e) {
                     responseFuture.release();
@@ -151,13 +145,10 @@ public abstract class AbstractClient implements Client {
             boolean acquired = onewaySemaphore.tryAcquire(timeoutMillis, TimeUnit.MILLISECONDS);
             if (acquired) {
                 try {
-                    channelFuture.channel().writeAndFlush(sdkProto).addListener(new ChannelFutureListener() {
-                        @Override
-                        public void operationComplete(ChannelFuture channelFuture) {
-                            onewaySemaphore.release();
-                            if (!channelFuture.isSuccess()) {
-                                logger.warn("send a request command to channel <" + NettyUtil.parseRemoteAddr(channel) + "> failed.");
-                            }
+                    channelFuture.channel().writeAndFlush(sdkProto).addListener((ChannelFutureListener) channelFuture -> {
+                        onewaySemaphore.release();
+                        if (!channelFuture.isSuccess()) {
+                            logger.warn("send a request command to channel <" + NettyUtil.parseRemoteAddr(channel) + "> failed.");
                         }
                     });
                 } catch (Exception e) {
@@ -167,7 +158,8 @@ public abstract class AbstractClient implements Client {
                     asyncResponse.remove(rqid);
                 }
             } else {
-                String info = String.format("invokeAsyncImpl tryAcquire semaphore timeout, %dms, waiting thread " + "nums: %d semaphoreAsyncValue: %d", timeoutMillis, this.asyncSemaphore.getQueueLength(), this.asyncSemaphore.availablePermits());
+                String info = String.format("invokeAsyncImpl tryAcquire semaphore timeout, %dms, waiting thread " + "nums: %d semaphoreAsyncValue: %d",
+                        timeoutMillis, this.asyncSemaphore.getQueueLength(), this.asyncSemaphore.availablePermits());
                 logger.warn(info);
                 throw new Exception(info);
             }

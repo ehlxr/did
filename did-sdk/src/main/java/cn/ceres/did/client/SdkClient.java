@@ -1,10 +1,10 @@
 package cn.ceres.did.client;
 
+import cn.ceres.did.common.Constants;
+import cn.ceres.did.common.NettyUtil;
 import cn.ceres.did.sdk.SdkClientDecoder;
 import cn.ceres.did.sdk.SdkClientEncoder;
 import cn.ceres.did.sdk.SdkProto;
-import cn.ceres.did.common.Constants;
-import cn.ceres.did.common.NettyUtil;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -17,7 +17,7 @@ import java.net.InetSocketAddress;
  * @author ehlxr
  */
 public class SdkClient extends AbstractClient {
-    private Logger logger = LoggerFactory.getLogger(SdkClient.class);
+    private final Logger logger = LoggerFactory.getLogger(SdkClient.class);
     private String host;
     private int port;
 
@@ -47,12 +47,9 @@ public class SdkClient extends AbstractClient {
 
         try {
             channelFuture = bootstrap.connect((host == null || "".equals(host)) ? Constants.DEFAULT_HOST : host, port == 0 ? Constants.SDKS_PORT : port).sync();
-            channelFuture.channel().closeFuture().addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture channelFuture) {
-                    logger.warn("client channel close.", channelFuture.cause());
-                    shutdown();
-                }
+            channelFuture.channel().closeFuture().addListener((ChannelFutureListener) channelFuture -> {
+                logger.warn("client channel close.", channelFuture.cause());
+                shutdown();
             });
 
             InetSocketAddress address = (InetSocketAddress) channelFuture.channel().remoteAddress();

@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author ehlxr
  */
 public class SdkProto {
-    private static final AtomicInteger requestId = new AtomicInteger(0);
+    private static final AtomicInteger REQUEST_ID = new AtomicInteger(0);
 
     /**
      * 请求的ID
@@ -18,7 +18,7 @@ public class SdkProto {
     private long did;
 
     public SdkProto() {
-        rqid = requestId.incrementAndGet();
+        rqid = REQUEST_ID.incrementAndGet();
         did = 0;
     }
 

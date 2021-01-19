@@ -1,8 +1,8 @@
 package cn.ceres.did.server.sdk;
 
 import cn.ceres.did.common.Constants;
-import cn.ceres.did.server.BaseServer;
 import cn.ceres.did.core.SnowFlake;
+import cn.ceres.did.server.BaseServer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
@@ -18,7 +18,7 @@ public class SdkServer extends BaseServer {
 
     public SdkServer(SnowFlake snowFlake) {
         this.snowFlake = snowFlake;
-        this.port = "".equals(Constants.getEnv("SDKS_PORT")) ? Constants.SDKS_PORT : Integer.valueOf(Constants.getEnv("SDKS_PORT"));
+        this.port = "".equals(Constants.getEnv("SDKS_PORT")) ? Constants.SDKS_PORT : Integer.parseInt(Constants.getEnv("SDKS_PORT"));
     }
 
     @Override

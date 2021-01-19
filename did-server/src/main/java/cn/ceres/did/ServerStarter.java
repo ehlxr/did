@@ -1,9 +1,9 @@
 package cn.ceres.did;
 
+import cn.ceres.did.common.Constants;
 import cn.ceres.did.core.SnowFlake;
 import cn.ceres.did.server.http.HttpServer;
 import cn.ceres.did.server.sdk.SdkServer;
-import cn.ceres.did.common.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +40,10 @@ public class ServerStarter {
         sdkServer.init();
         sdkServer.start();
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                httpServer.shutdown();
-                sdkServer.shutdown();
-                System.exit(0);
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            httpServer.shutdown();
+            sdkServer.shutdown();
+            System.exit(0);
+        }));
     }
 }
