@@ -24,7 +24,7 @@ public abstract class BaseServer implements Server {
     protected int port;
 
     public void init() {
-        defLoopGroup = new DefaultEventLoopGroup(8, new ThreadFactory() {
+        defLoopGroup = new DefaultEventLoopGroup(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
             private final AtomicInteger index = new AtomicInteger(0);
 
             @Override
@@ -32,7 +32,7 @@ public abstract class BaseServer implements Server {
                 return new Thread(r, "DEFAULTEVENTLOOPGROUP_" + index.incrementAndGet());
             }
         });
-        bossGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
+        bossGroup = new NioEventLoopGroup(1, new ThreadFactory() {
             private final AtomicInteger index = new AtomicInteger(0);
 
             @Override
@@ -40,7 +40,7 @@ public abstract class BaseServer implements Server {
                 return new Thread(r, "BOSS_" + index.incrementAndGet());
             }
         });
-        workGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 10, new ThreadFactory() {
+        workGroup = new NioEventLoopGroup(new ThreadFactory() {
             private final AtomicInteger index = new AtomicInteger(0);
 
             @Override
@@ -54,12 +54,15 @@ public abstract class BaseServer implements Server {
 
     @Override
     public void shutdown() {
-        if (defLoopGroup != null) {
-            defLoopGroup.shutdownGracefully();
+        try {
+            // 同步阻塞 shutdownGracefully 完成
+            if (defLoopGroup != null) {
+                defLoopGroup.shutdownGracefully().sync();
+            }
+            bossGroup.shutdownGracefully().sync();
+            workGroup.shutdownGracefully().sync();
+        } catch (Exception e) {
+            logger.error("Server EventLoopGroup shutdown error.", e);
         }
-        bossGroup.shutdownGracefully();
-        workGroup.shutdownGracefully();
-
-        logger.info("Server EventLoopGroup shutdown finish");
     }
 }

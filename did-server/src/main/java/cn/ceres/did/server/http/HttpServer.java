@@ -66,4 +66,10 @@ public class HttpServer extends BaseServer {
         }
     }
 
+    @Override
+    public void shutdown() {
+        logger.info("HttpServer shutdowning......");
+        super.shutdown();
+        logger.info("HttpServer shutdown finish!");
+    }
 }

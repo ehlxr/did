@@ -56,4 +56,11 @@ public class SdkServer extends BaseServer {
             logger.error("SdkServer start fail,", e);
         }
     }
+
+    @Override
+    public void shutdown() {
+        logger.info("SdkServer shutdowning......");
+        super.shutdown();
+        logger.info("SdkServer shutdown finish!");
+    }
 }

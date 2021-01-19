@@ -2,14 +2,15 @@ package cn.ceres.did;
 
 import cn.ceres.did.common.Constants;
 import cn.ceres.did.core.SnowFlake;
+import cn.ceres.did.server.Server;
 import cn.ceres.did.server.http.HttpServer;
 import cn.ceres.did.server.sdk.SdkServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+
 /**
- * 两个服务器进程最好用同一个 SnowFlake 实例，部署在分布式环境时，SnowFlake 的 datacenterId 和 machineId 作为联合键必须全局唯一，否则多个节点的服务可能产生相同的 ID
- *
  * @author ehlxr
  */
 public class ServerStarter {
@@ -40,10 +41,8 @@ public class ServerStarter {
         sdkServer.init();
         sdkServer.start();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            httpServer.shutdown();
-            sdkServer.shutdown();
-            System.exit(0);
-        }));
+        // 并行 shutdown server
+        Runtime.getRuntime().addShutdownHook(new Thread(() ->
+                Arrays.stream(new Server[]{httpServer, sdkServer}).parallel().forEach(Server::shutdown)));
     }
 }
