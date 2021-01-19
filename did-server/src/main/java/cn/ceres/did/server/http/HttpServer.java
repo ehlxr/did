@@ -10,6 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Http服务器，使用Netty中的Http协议栈，
@@ -19,6 +21,8 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
  * @author ehlxr
  */
 public class HttpServer extends BaseServer {
+    protected Logger logger = LoggerFactory.getLogger(HttpServer.class);
+
     private final SnowFlake snowFlake;
 
     public HttpServer(SnowFlake snowFlake) {
@@ -60,15 +64,6 @@ public class HttpServer extends BaseServer {
         } catch (InterruptedException e) {
             logger.error("HttpServer start fail,", e);
         }
-    }
-
-    @Override
-    public void shutdown() {
-        if (defLoopGroup != null) {
-            defLoopGroup.shutdownGracefully();
-        }
-        bossGroup.shutdownGracefully();
-        workGroup.shutdownGracefully();
     }
 
 }

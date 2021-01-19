@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author ehlxr
  */
 public abstract class BaseServer implements Server {
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(BaseServer.class);
 
     protected DefaultEventLoopGroup defLoopGroup;
     protected NioEventLoopGroup bossGroup;
@@ -59,6 +59,7 @@ public abstract class BaseServer implements Server {
         }
         bossGroup.shutdownGracefully();
         workGroup.shutdownGracefully();
+
         logger.info("Server EventLoopGroup shutdown finish");
     }
 }
