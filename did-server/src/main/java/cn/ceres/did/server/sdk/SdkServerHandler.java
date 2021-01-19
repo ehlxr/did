@@ -32,11 +32,10 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, SdkProto sdkProto) throws Exception {
-        // if (msg instanceof SdkProto) {
-        //     SdkProto sdkProto = (SdkProto) msg;
         if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
             try {
                 sdkProto.setDid(snowFlake.nextId());
+
                 ctx.channel().writeAndFlush(sdkProto).addListener((ChannelFutureListener) channelFuture -> semaphore.release());
             } catch (Exception e) {
                 semaphore.release();
@@ -50,7 +49,6 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
             logger.warn(info);
             throw new Exception(info);
         }
-        // }
     }
 
     @Override

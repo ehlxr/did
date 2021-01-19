@@ -2,6 +2,7 @@ package cn.ceres.did;
 
 import cn.ceres.did.client.SdkClient;
 import cn.ceres.did.sdk.SdkProto;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -12,14 +13,18 @@ import java.util.concurrent.TimeUnit;
  */
 public class DidSdkTest {
     private static final int NUM = 10;
+    SdkClient client;
 
-    @Test
-    public void didSdkTest() throws Exception {
-        SdkClient client = new SdkClient("127.0.0.1", 16831);
+    @Before
+    public void init() {
+        client = new SdkClient("127.0.0.1", 16831);
         // SdkClient client = new SdkClient();
         client.init();
         client.start();
+    }
 
+    @Test
+    public void didSdkTest() throws Exception {
         // 测试同步请求，关注rqid是否对应
         for (int i = 0; i < NUM; i++) {
             SdkProto sdkProto = new SdkProto();
@@ -43,5 +48,13 @@ public class DidSdkTest {
         countDownLatch.await(10, TimeUnit.SECONDS);
         System.out.println("invokeAsync test finish");
 
+    }
+
+    @Test
+    public void testInvoke() throws Exception {
+        System.out.println(client.invoke());
+
+        client.setTimeoutMillis(3000);
+        System.out.println(client.invoke());
     }
 }

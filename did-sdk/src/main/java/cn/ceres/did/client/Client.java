@@ -15,4 +15,8 @@ public interface Client {
     void invokeAsync(SdkProto proto, long timeoutMillis, InvokeCallback invokeCallback) throws Exception;
 
     void invokeOneWay(SdkProto proto, long timeoutMillis) throws Exception;
+
+    default long invoke(long timeoutMillis) throws Exception {
+        return invokeSync(new SdkProto(), timeoutMillis).getDid();
+    }
 }

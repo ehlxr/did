@@ -27,6 +27,16 @@ public abstract class AbstractClient implements Client {
     ChannelFuture channelFuture;
     Bootstrap bootstrap;
 
+    int timeoutMillis = 2000;
+
+    public int getTimeoutMillis() {
+        return timeoutMillis;
+    }
+
+    public void setTimeoutMillis(int timeoutMillis) {
+        this.timeoutMillis = timeoutMillis;
+    }
+
     public void init() {
         asyncResponse = new ConcurrentHashMap<>(16);
         workGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 10, new ThreadFactory() {
@@ -167,5 +177,9 @@ public abstract class AbstractClient implements Client {
             NettyUtil.closeChannel(channel);
             throw new Exception(NettyUtil.parseRemoteAddr(channel));
         }
+    }
+
+    public long invoke() throws Exception {
+        return invoke(timeoutMillis);
     }
 }

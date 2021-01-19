@@ -1,7 +1,5 @@
 package cn.ceres.did;
 
-import cn.ceres.did.client.InvokeCallback;
-import cn.ceres.did.client.ResponseFuture;
 import cn.ceres.did.client.SdkClient;
 import cn.ceres.did.sdk.SdkProto;
 import org.junit.After;
@@ -23,7 +21,7 @@ public class DidSdkPressTest {
 
     @Before
     public void init() {
-        client = new SdkClient("127.0.0.1",16831);
+        client = new SdkClient("127.0.0.1", 16831);
         // client = new SdkClient();
         client.init();
         client.start();
@@ -50,12 +48,7 @@ public class DidSdkPressTest {
             start = System.currentTimeMillis();
             for (int i = 0; i < NUM; i++) {
                 final SdkProto sdkProto = new SdkProto();
-                client.invokeAsync(sdkProto, 5000, new InvokeCallback() {
-                    @Override
-                    public void operationComplete(ResponseFuture responseFuture) {
-                        countDownLatch.countDown();
-                    }
-                });
+                client.invokeAsync(sdkProto, 5000, responseFuture -> countDownLatch.countDown());
             }
 
             // countDownLatch.await(10, TimeUnit.SECONDS);

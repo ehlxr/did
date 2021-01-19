@@ -33,8 +33,8 @@ public class SdkClient extends AbstractClient {
     public void start() {
         bootstrap.group(workGroup)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                .option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.SO_KEEPALIVE, true)
+                // .option(ChannelOption.TCP_NODELAY, true)
+                // .option(ChannelOption.SO_KEEPALIVE, true)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -46,7 +46,9 @@ public class SdkClient extends AbstractClient {
                 });
 
         try {
-            channelFuture = bootstrap.connect((host == null || "".equals(host)) ? Constants.DEFAULT_HOST : host, port == 0 ? Constants.SDKS_PORT : port).sync();
+            channelFuture = bootstrap.connect((host == null || "".equals(host)) ? Constants.DEFAULT_HOST : host,
+                    port == 0 ? Constants.SDKS_PORT : port).sync();
+
             channelFuture.channel().closeFuture().addListener((ChannelFutureListener) channelFuture -> {
                 logger.warn("client channel close.", channelFuture.cause());
                 shutdown();

@@ -11,8 +11,6 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 
-import java.net.InetSocketAddress;
-
 /**
  * Http服务器，使用Netty中的Http协议栈，
  * 实现中支持多条请求路径，对于不存在的请求路径返回404状态码
@@ -33,12 +31,11 @@ public class HttpServer extends BaseServer {
         super.init();
         serverBootstrap.group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, false)
-                .option(ChannelOption.TCP_NODELAY, true)
+                // .option(ChannelOption.SO_KEEPALIVE, false)
+                // .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_BACKLOG, 1024)
-                .localAddress(new InetSocketAddress(port))
+                // .localAddress(new InetSocketAddress(port))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
-
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ch.pipeline().addLast(defLoopGroup,
@@ -49,15 +46,17 @@ public class HttpServer extends BaseServer {
                         );
                     }
                 });
-
     }
 
     @Override
     public void start() {
         try {
-            channelFuture = serverBootstrap.bind().sync();
-            InetSocketAddress addr = (InetSocketAddress) channelFuture.channel().localAddress();
-            logger.info("HttpServer start success, port is:{}", addr.getPort());
+            channelFuture = serverBootstrap.bind(port).sync();
+            logger.info("HttpServer start success, port is:{}", port);
+
+            // channelFuture = serverBootstrap.bind().sync();
+            // InetSocketAddress addr = (InetSocketAddress) channelFuture.channel().localAddress();
+            // logger.info("HttpServer start success, port is:{}", addr.getPort());
         } catch (InterruptedException e) {
             logger.error("HttpServer start fail,", e);
         }
