@@ -15,11 +15,17 @@ import org.slf4j.LoggerFactory;
  */
 public class SdkServer extends BaseServer {
     protected Logger logger = LoggerFactory.getLogger(SdkServer.class);
-    private final SnowFlake snowFlake;
 
     public SdkServer(SnowFlake snowFlake) {
         this.snowFlake = snowFlake;
-        this.port = "".equals(Constants.getEnv("SDKS_PORT")) ? Constants.SDKS_PORT : Integer.parseInt(Constants.getEnv("SDKS_PORT"));
+        this.port = "".equals(Constants.getEnv("SDK_PORT")) ?
+                Constants.SDK_PORT :
+                Integer.parseInt(Constants.getEnv("SDK_PORT"));
+    }
+
+    public SdkServer(SnowFlake snowFlake, int port) {
+        this.snowFlake = snowFlake;
+        this.port = port;
     }
 
     @Override
@@ -48,10 +54,6 @@ public class SdkServer extends BaseServer {
         try {
             channelFuture = serverBootstrap.bind(port).sync();
             logger.info("SdkServer start success, port is:{}", port);
-
-            // channelFuture = serverBootstrap.bind().sync();
-            // InetSocketAddress addr = (InetSocketAddress) channelFuture.channel().localAddress();
-            // logger.info("SdkServer start success, port is:{}", addr.getPort());
         } catch (InterruptedException e) {
             logger.error("SdkServer start fail,", e);
         }

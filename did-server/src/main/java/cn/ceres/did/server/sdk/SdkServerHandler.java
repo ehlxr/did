@@ -2,6 +2,7 @@ package cn.ceres.did.server.sdk;
 
 import cn.ceres.did.common.Constants;
 import cn.ceres.did.common.NettyUtil;
+import cn.ceres.did.common.SdkProto;
 import cn.ceres.did.core.SnowFlake;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -23,7 +24,7 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
     /**
      * 通过信号量来控制流量
      */
-    private final Semaphore semaphore = new Semaphore(Constants.HANDLE_SDKS_TPS);
+    private final Semaphore semaphore = new Semaphore(Constants.HANDLE_SDK_TPS);
     private final SnowFlake snowFlake;
 
     SdkServerHandler(SnowFlake snowFlake) {

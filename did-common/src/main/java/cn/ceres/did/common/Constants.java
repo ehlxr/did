@@ -12,33 +12,41 @@ public class Constants {
         return SYS_ENV.get(key) == null ? "" : SYS_ENV.get(key);
     }
 
-    public static String DEFAULT_HOST = "localhost";
+    public static String SERVER_HOST = "localhost";
     /**
-     * HTTP协议和SDK协议服务器的端口
+     * HTTP 协议和 SDK 协议服务器默认端口
      */
     public static int HTTP_PORT = 16830;
-    public static int SDKS_PORT = 16831;
+    public static int SDK_PORT = 16831;
 
     /**
-     * HTTP协议和SDK协议的请求路径
-     */
-    public static String HTTP_REQUEST = "did";
-    public static String SDKS_REQUEST = "did";
-
-    /**
-     * 数据中心的标识ID，取值范围：0~31
-     * 机器或进程的标识ID，取值范围：0~31
-     * 两个标识ID组合在分布式环境中必须唯一
+     * 数据中心默认标识 ID，取值范围：0~31
+     * 机器或进程默认标识 ID，取值范围：0~31
+     * <p>
+     * 两个标识 ID 组合在分布式环境中必须唯一
      */
     public static long DATACENTER_ID = 1;
     public static long MACHINES_ID = 1;
 
     /**
-     * 流量控制，表示每秒处理的并发数
+     * Server 流量控制，表示每秒处理的并发数
      */
     public static int HANDLE_HTTP_TPS = 10000;
-    public static int HANDLE_SDKS_TPS = 50000;
+    public static int HANDLE_SDK_TPS = 50000;
+
+    /**
+     * sdk client 流量控制，表示每秒处理的并发数
+     */
+    public static int SDK_CLIENT_ASYNC_TPS = 100000;
+    public static int SDK_CLIENT_ONEWAY_TPS = 100000;
+
     public static int ACQUIRE_TIMEOUTMILLIS = 5000;
+
+    /**
+     * sdk client 默认超时时间
+     */
+    public static int SDK_CLIENT_TIMEOUTMILLIS = 2000;
+
 
     private Constants() {
     }

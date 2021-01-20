@@ -1,6 +1,7 @@
 package cn.ceres.did.server.sdk;
 
 import cn.ceres.did.common.NettyUtil;
+import cn.ceres.did.common.SdkProto;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

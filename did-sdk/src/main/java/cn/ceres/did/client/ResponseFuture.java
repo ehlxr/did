@@ -1,6 +1,6 @@
 package cn.ceres.did.client;
 
-import cn.ceres.did.sdk.SdkProto;
+import cn.ceres.did.common.SdkProto;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author ehlxr
  */
 public class ResponseFuture {
-    private final int rqid;
     private final long timeoutMillis;
     private final Semaphore semaphore;
     private final InvokeCallback invokeCallback;
@@ -21,14 +20,11 @@ public class ResponseFuture {
 
     private volatile Throwable cause;
     private volatile SdkProto sdkProto;
-    private volatile boolean isSendStateOk;
 
-    public ResponseFuture(int rqid, long timeoutMillis, InvokeCallback invokeCallback, Semaphore semaphore) {
-        this.rqid = rqid;
+    public ResponseFuture(long timeoutMillis, InvokeCallback invokeCallback, Semaphore semaphore) {
         this.timeoutMillis = timeoutMillis;
         this.invokeCallback = invokeCallback;
         this.semaphore = semaphore;
-        this.isSendStateOk = false;
     }
 
     /**
@@ -75,14 +71,6 @@ public class ResponseFuture {
         this.sdkProto = sdkProto;
     }
 
-    public boolean isSendStateOk() {
-        return isSendStateOk;
-    }
-
-    public void setIsSendStateOk(boolean isSendStateOk) {
-        this.isSendStateOk = isSendStateOk;
-    }
-
     public Throwable getCause() {
         return cause;
     }
@@ -94,7 +82,6 @@ public class ResponseFuture {
     @Override
     public String toString() {
         return "ResponseFuture{" +
-                "rqid=" + rqid +
                 ", timeoutMillis=" + timeoutMillis +
                 ", semaphore=" + semaphore +
                 ", invokeCallback=" + invokeCallback +
@@ -103,7 +90,6 @@ public class ResponseFuture {
                 ", countDownLatch=" + countDownLatch +
                 ", cause=" + cause +
                 ", sdkProto=" + sdkProto +
-                ", isSendStateOk=" + isSendStateOk +
                 '}';
     }
 }

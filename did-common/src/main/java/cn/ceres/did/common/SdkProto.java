@@ -1,9 +1,13 @@
-package cn.ceres.did.server.sdk;
+package cn.ceres.did.common;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author ehlxr
  */
 public class SdkProto {
+    private static final AtomicInteger REQUEST_ID = new AtomicInteger(0);
+
     /**
      * 请求的ID
      */
@@ -13,7 +17,12 @@ public class SdkProto {
      */
     private long did;
 
-    SdkProto(int rqid, long did) {
+    public SdkProto() {
+        rqid = REQUEST_ID.incrementAndGet();
+        did = 0;
+    }
+
+    public SdkProto(int rqid, long did) {
         this.rqid = rqid;
         this.did = did;
     }

@@ -1,5 +1,6 @@
 package cn.ceres.did.server;
 
+import cn.ceres.did.core.SnowFlake;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.DefaultEventLoopGroup;
@@ -22,6 +23,7 @@ public abstract class BaseServer implements Server {
     protected ChannelFuture channelFuture;
     protected ServerBootstrap serverBootstrap;
     protected int port;
+    protected SnowFlake snowFlake;
 
     public void init() {
         defLoopGroup = new DefaultEventLoopGroup(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {

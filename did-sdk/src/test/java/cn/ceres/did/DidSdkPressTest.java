@@ -1,7 +1,6 @@
 package cn.ceres.did;
 
 import cn.ceres.did.client.SdkClient;
-import cn.ceres.did.sdk.SdkProto;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,9 +20,7 @@ public class DidSdkPressTest {
 
     @Before
     public void init() {
-        client = new SdkClient("127.0.0.1", 16831);
-        // client = new SdkClient();
-        client.init();
+        client = new SdkClient();
         client.start();
     }
 
@@ -31,7 +28,6 @@ public class DidSdkPressTest {
     public void destroy() {
         client.shutdown();
     }
-
 
     @Test
     public void asyncTest() throws Exception {
@@ -47,8 +43,7 @@ public class DidSdkPressTest {
             final CountDownLatch countDownLatch = new CountDownLatch(NUM);
             start = System.currentTimeMillis();
             for (int i = 0; i < NUM; i++) {
-                final SdkProto sdkProto = new SdkProto();
-                client.invokeAsync(sdkProto, 5000, responseFuture -> countDownLatch.countDown());
+                client.invokeAsync(responseFuture -> countDownLatch.countDown());
             }
 
             // countDownLatch.await(10, TimeUnit.SECONDS);
@@ -74,12 +69,11 @@ public class DidSdkPressTest {
         long amount = 0;
         long allcast = 0;
 
-        for (int k = 0; k < 20; k++) {
+        for (int k = 0; k < 10; k++) {
             start = System.currentTimeMillis();
             int NUM = 60000;
             for (int i = 0; i < NUM; i++) {
-                final SdkProto sdkProto = new SdkProto();
-                client.invokeSync(sdkProto, 5000);
+                client.invokeSync();
             }
 
             end = System.currentTimeMillis();

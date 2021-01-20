@@ -15,11 +15,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 自定义的处理器，目前支持三种请求：
- * getTime: 获取服务器当前时间；
- * clientInfo: 获取请求客户端的User-Agent信息
- * 其它： 返回404状态，并且提示404信息
- *
  * @author ehlxr
  */
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {

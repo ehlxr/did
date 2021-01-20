@@ -14,20 +14,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Http服务器，使用Netty中的Http协议栈，
- * 实现中支持多条请求路径，对于不存在的请求路径返回404状态码
- * 如：http://localhost:8099/getTime
+ * Http 服务器，使用 Netty 中的 Http 协议栈，
  *
  * @author ehlxr
  */
 public class HttpServer extends BaseServer {
     protected Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
-    private final SnowFlake snowFlake;
+    public HttpServer(SnowFlake snowFlake, int port) {
+        this.snowFlake = snowFlake;
+        this.port = port;
+    }
 
     public HttpServer(SnowFlake snowFlake) {
         this.snowFlake = snowFlake;
-        this.port = "".equals(Constants.getEnv("HTTP_PORT")) ? Constants.HTTP_PORT : Integer.parseInt(Constants.getEnv("HTTP_PORT"));
+        this.port = "".equals(Constants.getEnv("HTTP_PORT")) ?
+                Constants.HTTP_PORT :
+                Integer.parseInt(Constants.getEnv("HTTP_PORT"));
     }
 
     @Override
@@ -57,10 +60,6 @@ public class HttpServer extends BaseServer {
         try {
             channelFuture = serverBootstrap.bind(port).sync();
             logger.info("HttpServer start success, port is:{}", port);
-
-            // channelFuture = serverBootstrap.bind().sync();
-            // InetSocketAddress addr = (InetSocketAddress) channelFuture.channel().localAddress();
-            // logger.info("HttpServer start success, port is:{}", addr.getPort());
         } catch (InterruptedException e) {
             logger.error("HttpServer start fail,", e);
         }
