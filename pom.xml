@@ -56,10 +56,10 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>2.8.2</version>
-                    <!--<configuration>-->
-                    <!--    <altDeploymentRepository>maven.repo::default::file://${project.build.directory}/mvn-repo-->
-                    <!--    </altDeploymentRepository>-->
-                    <!--</configuration>-->
+                    <configuration>
+                        <altDeploymentRepository>maven.repo::default::file://${project.build.directory}/mvn-repo
+                        </altDeploymentRepository>
+                    </configuration>
                 </plugin>
 
                 <plugin>
@@ -90,55 +90,64 @@
                     </executions>
                 </plugin>
 
-                <!--<plugin>-->
-                <!--    &lt;!&ndash; Deploy the web site &ndash;&gt;-->
-                <!--    <groupId>com.github.github</groupId>-->
-                <!--    <artifactId>site-maven-plugin</artifactId>-->
-                <!--    <version>0.12</version>-->
-                <!--    <executions>-->
-                <!--        <execution>-->
-                <!--            <goals>-->
-                <!--                <goal>site</goal>-->
-                <!--            </goals>-->
-                <!--            &lt;!&ndash; select the Maven phase in which the plugin will be executed &ndash;&gt;-->
-                <!--            <phase>deploy</phase>-->
-                <!--            <configuration>-->
-                <!--                &lt;!&ndash; Plugin configuration goes here &ndash;&gt;-->
-                <!--                <server>github</server>-->
-                <!--                &lt;!&ndash; The commit message &ndash;&gt;-->
-                <!--                <message>init git maven repository</message>-->
-                <!--                &lt;!&ndash; The location where the site is uploaded &ndash;&gt;-->
-                <!--                <repositoryName>mvn-repository</repositoryName> &lt;!&ndash; github repo name &ndash;&gt;-->
-                <!--                <repositoryOwner>ehlxr</repositoryOwner> &lt;!&ndash; organization or user name  &ndash;&gt;-->
-                <!--                &lt;!&ndash; Use merge or override the content &ndash;&gt;-->
-                <!--                <merge>true</merge>-->
-                <!--                <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>-->
-                <!--                <branch>refs/heads/mvn-repo</branch>-->
-                <!--                &lt;!&ndash;<includes>&ndash;&gt;-->
-                <!--                &lt;!&ndash;    <include>**/*</include>&ndash;&gt;-->
-                <!--                &lt;!&ndash;</includes>&ndash;&gt;-->
-                <!--            </configuration>-->
-                <!--        </execution>-->
-                <!--    </executions>-->
-                <!--</plugin>-->
+                <plugin>
+                    <!-- Deploy the web site -->
+                    <groupId>com.github.github</groupId>
+                    <artifactId>site-maven-plugin</artifactId>
+                    <version>0.12</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>site</goal>
+                            </goals>
+                            <!-- select the Maven phase in which the plugin will be executed -->
+                            <phase>deploy</phase>
+                            <configuration>
+                                <!-- Plugin configuration goes here -->
+                                <userName>ehlxr</userName>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <password>${env.GITHUB_MVN_TOKEN}</password>
+                                <!-- The commit message -->
+                                <message>init git maven repository</message>
+                                <!-- The location where the site is uploaded -->
+                                <repositoryName>mvn-repository</repositoryName> <!-- github repo name -->
+                                <repositoryOwner>ehlxr</repositoryOwner> <!-- organization or user name  -->
+                                <!-- Use merge or override the content -->
+                                <merge>true</merge>
+                                <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
+                                <branch>refs/heads/mvn-repo</branch>
+                                <!--<includes>-->
+                                <!--    <include>**/*</include>-->
+                                <!--</includes>-->
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
-    </build>
 
-    <!--<distributionManagement>-->
-    <!--    <repository>-->
-    <!--        <id>maven.repo</id>-->
-    <!--        <name>Local Staging Repository</name>-->
-    <!--        <url>file://${project.build.directory}/mvn-repo</url>-->
-    <!--    </repository>-->
-    <!--</distributionManagement>-->
+        <plugins>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
     <distributionManagement>
         <repository>
-            <id>github</id>
-            <name>GitHub Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/ehlxr/mvn-repository</url>
+            <id>maven.repo</id>
+            <name>Local Staging Repository</name>
+            <url>file://${project.build.directory}/mvn-repo</url>
         </repository>
     </distributionManagement>
+
+    <!--<distributionManagement>-->
+    <!--    <repository>-->
+    <!--        <id>github</id>-->
+    <!--        <name>GitHub Apache Maven Packages</name>-->
+    <!--        <url>https://maven.pkg.github.com/ehlxr/mvn-repository</url>-->
+    <!--    </repository>-->
+    <!--</distributionManagement>-->
 
 </project>
