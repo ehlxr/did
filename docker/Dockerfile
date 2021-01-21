@@ -4,11 +4,14 @@ MAINTAINER ehlxr <ehlxr.me@gmail.com>
 WORKDIR /opt
 
 ARG SERVER_NAME
+
 ENV SERVER_NAME=${SERVER_NAME}
+ENV SDK_PORT=16831
+ENV HTTP_PORT=16830
 
 COPY ./docker/ /opt/
 
 RUN chmod -R 755 /opt/
 
-EXPOSE 16830 16831
+EXPOSE ${SDK_PORT} ${HTTP_PORT}
 ENTRYPOINT ["/opt/start.sh"]
