@@ -8,6 +8,9 @@ workspace:
 steps:
   - name: build
     image: maven
+    volumes:
+      - name: m2_cache # The Volume's name
+        path: /root/.m2 # The path in the container
     commands:
     - mvn clean install -DskipTests -e -U
     - cp ./did-server/target/did-server*.jar ./docker
@@ -17,7 +20,7 @@ steps:
     image: plugins/docker
     settings:
       repo: docker.ehlxr.me/ehlxr/did-server
-      dockerfile: ./did-server/docker/build/Dockerfile
+      dockerfile: ./docker/Dockerfile
       registry: docker.ehlxr.me
       username:
         from_secret: docker_username
@@ -49,3 +52,8 @@ steps:
       status:
       - failure
       - success
+
+volumes:
+  - name: m2_cache # The name use in this pipeline,
+    host:
+      path: /m2_cache # The path be used in the host.
