@@ -11,6 +11,5 @@ COPY ${SERVER_NAME}*.jar /opt/
 
 RUN chmod -R 755 /opt/
 
-
 EXPOSE 16830 16831
 ENTRYPOINT ["/opt/start.sh"]

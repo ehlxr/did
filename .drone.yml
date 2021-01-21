@@ -1,0 +1,51 @@
+kind: pipeline
+type: docker
+name: default
+
+workspace:
+  path: /did
+
+steps:
+  - name: build
+    image: maven
+    commands:
+    - mvn clean install -DskipTests -e -U
+    - cp ./did-server/target/did-server*.jar ./docker
+    - echo -n "$(date -d @${DRONE_BUILD_CREATED} '+%Y%m%d_%H%M%S')_${DRONE_BUILD_NUMBER}, $(grep "<version>.*</version>" pom.xml | head -1 | awk -F '[>,<]' '{print $3})', latest" > .tags
+
+  - name: docker
+    image: plugins/docker
+    settings:
+      repo: docker.ehlxr.me/ehlxr/did-server
+      dockerfile: ./did-server/docker/build/Dockerfile
+      registry: docker.ehlxr.me
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      build_args:
+        - SERVER_NAME=did-server
+
+  # - name: deploy
+  #   image: appleboy/drone-ssh
+  #   settings:
+  #     host: 158.101.68.196
+  #     username: root
+  #     password:
+  #       from_secret: ssh_password
+  #     port: 22
+  #     script:
+  #       - docker swarm init
+  #       - docker service create --replicas 2 -p 4000:4000 --name blog ehlxr/blog:$(date -d @${DRONE_BUILD_CREATED} "+%Y%m%d_%H%M%S")_${DRONE_BUILD_NUMBER}
+  #       - docker service update --image ehlxr/blog:$(date -d @${DRONE_BUILD_CREATED} "+%Y%m%d_%H%M%S")_${DRONE_BUILD_NUMBER} blog
+
+  - name: notification
+    image: lddsb/drone-dingtalk-message
+    settings:
+      token:
+        from_secret: dingtalk_token
+      type: markdown
+    when:
+      status:
+      - failure
+      - success

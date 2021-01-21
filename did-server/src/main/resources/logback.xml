@@ -7,8 +7,8 @@
         </encoder>
     </appender>
 
-    <appender name="ID-SERVER-ERR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/data/logs/did/did-server-error.log</file>
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH:.}/logs/did/did-server-error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>/data/logs/did/did-server-error.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>30</maxHistory>
@@ -24,8 +24,8 @@
         </encoder>
     </appender>
 
-    <appender name="ID-SERVER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/data/logs/did/did-server.log</file>
+    <appender name="NORMAL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./logs/did/did-server.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>/data/logs/did/did-server.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>30</maxHistory>
@@ -36,11 +36,10 @@
         </encoder>
     </appender>
 
-
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="ID-SERVER"/>
-        <appender-ref ref="ID-SERVER-ERR"/>
+        <appender-ref ref="ERROR"/>
+        <appender-ref ref="NORMAL"/>
     </root>
 
 </configuration>
