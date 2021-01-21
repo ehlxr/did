@@ -6,8 +6,7 @@ WORKDIR /opt
 ARG SERVER_NAME
 ENV SERVER_NAME=${SERVER_NAME}
 
-COPY start.sh /opt/start.sh
-COPY ${SERVER_NAME}*.jar /opt/
+COPY ./docker/ /opt/
 
 RUN chmod -R 755 /opt/
 

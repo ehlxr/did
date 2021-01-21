@@ -5,13 +5,13 @@ set -e
 echo "############## start ##############"
 BUILD_DATE=`date +%Y-%m-%d:%H:%M:%S`
 
-CURR_DIR=`basename $PWD`
-if [[ ${CURR_DIR} != "docker" ]]; then
-    echo "############## must exec in docker dir ##############"
-    exit 2;
-fi
-
-cd ../
+#CURR_DIR=`basename $PWD`
+#if [[ ${CURR_DIR} != "docker" ]]; then
+#    echo "############## must exec in docker dir ##############"
+#    exit 2;
+#fi
+#
+#cd ../
 #SERVER_NAME=`awk '/<name>[^<]+<\/name>/{gsub(/<name>|<\/name>/,"",$1);print $1;exit;}' pom.xml`
 #SERVER_NAME=$(basename `pwd`)
 SERVER_NAME=${MODULE_PARMS}
@@ -25,7 +25,7 @@ else
 fi
 
 cp ${SERVER_JAR} ./docker
-cd docker
+#cd docker
 
 if [[ ${DOCKER_IMAGE_TAG} ]];then
     image_tag=${DOCKER_IMAGE_TAG}
@@ -39,13 +39,13 @@ echo "############## image_tag is: ${image_tag} ##############"
 base_url=docker.ehlxr.me
 docker_url=${base_url}/ehlxr/${SERVER_NAME}:${image_tag}
 
-docker build --build-arg SERVER_NAME=${SERVER_NAME} -f ./Dockerfile -t ${docker_url} .
+docker build --build-arg SERVER_NAME=${SERVER_NAME} -f ./docker/Dockerfile -t ${docker_url} .
 # get user pwd from environment
 echo "${DOCKER_REGISTRY_PWD}" | docker login --username ${DOCKER_REGISTRY_USER} --password-stdin ${base_url}
 
 docker push ${docker_url}
 
-rm ${SERVER_NAME}*.jar
+rm ./docker/${SERVER_NAME}*.jar
 echo "############## build & push finish: ${BUILD_DATE}  ##############"
 
 err=$?
