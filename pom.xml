@@ -4,17 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cn.ceres.did</groupId>
-    <artifactId>did</artifactId>
+    <groupId>io.github.ehlxr</groupId>
+    <artifactId>did-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <modules>
         <module>did-server</module>
         <module>did-sdk</module>
         <module>did-common</module>
     </modules>
 
-    <name>did</name>
+    <name>did-parent</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,6 +22,7 @@
         <!--目标编译的 Java 版本可以通过以下属性指定，不用配置 maven-compiler-plugin 插件-->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <did.version>1.0.2-SNAPSHOT</did.version>
 
         <netty.version>4.1.58.Final</netty.version>
         <logback.version>1.1.7</logback.version>
@@ -45,6 +46,11 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.ehlxr</groupId>
+                <artifactId>did-common</artifactId>
+                <version>${did.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

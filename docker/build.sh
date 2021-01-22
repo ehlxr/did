@@ -3,7 +3,7 @@
 set -e
 
 echo "############## start ##############"
-BUILD_DATE=`date +%Y-%m-%d:%H:%M:%S`
+BUILD_DATE=$(date +%Y-%m-%d:%H:%M:%S)
 
 #CURR_DIR=`basename $PWD`
 #if [[ ${CURR_DIR} != "docker" ]]; then
@@ -18,21 +18,21 @@ SERVER_NAME=${MODULE_PARMS}
 
 SERVER_JAR=$PWD/${MODULE_PARMS}/target/${SERVER_NAME}*.jar
 #if [ ! -n "ls ${SERVER_JAR} >/dev/null 2>&1" ]; then
-if [[ "`echo ${SERVER_JAR}`" != "${SERVER_JAR}" ]]; then
-    echo exist ${SERVER_JAR} skip maven build.
+if [[ "$(echo ${SERVER_JAR})" != "${SERVER_JAR}" ]]; then
+  echo exist ${SERVER_JAR} skip maven build.
 else
-    mvn clean install -DskipTests
+  mvn clean install -DskipTests
 fi
 
 cp ${SERVER_JAR} ./docker
 #cd docker
 
-if [[ ${DOCKER_IMAGE_TAG} ]];then
-    image_tag=${DOCKER_IMAGE_TAG}
+if [[ ${DOCKER_IMAGE_TAG} ]]; then
+  image_tag=${DOCKER_IMAGE_TAG}
 else
-    echo "############## DOCKER_IMAGE_TAG is null !  ##############"
-    # image_tag=$(git symbolic-ref --short -q HEAD)
-    image_tag=`date "+%Y%m%d_%H%M%S"`
+  echo "############## DOCKER_IMAGE_TAG is null !  ##############"
+  # image_tag=$(git symbolic-ref --short -q HEAD)
+  image_tag=$(date "+%Y%m%d_%H%M%S")
 fi
 echo "############## image_tag is: ${image_tag} ##############"
 
@@ -50,6 +50,6 @@ echo "############## build & push finish: ${BUILD_DATE}  ##############"
 
 err=$?
 if [[ "$err" -ne "0" ]]; then
-    echo "############## build error !  ##############"
-	exit 1
+  echo "############## build error !  ##############"
+  exit 1
 fi

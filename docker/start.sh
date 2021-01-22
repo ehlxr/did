@@ -7,14 +7,14 @@ LOGS_DIR="/data/logs"
 GC_LOGS_DIR="/data/gc"
 
 if [[ ! -d ${LOGS_DIR} ]]; then
-	mkdir -p ${LOGS_DIR}
+  mkdir -p ${LOGS_DIR}
 fi
 if [[ ! -d ${GC_LOGS_DIR} ]]; then
-	mkdir -p ${GC_LOGS_DIR}
+  mkdir -p ${GC_LOGS_DIR}
 fi
 
 STDOUT_FILE=${LOGS_DIR}/${SERVER_NAME}.log
-CURRENT=`date "+%Y%m%d%H%M%S"`
+CURRENT=$(date "+%Y%m%d%H%M%S")
 
 #JAVA_OPTS=" -Duser.timezone=\"Asia/Shanghai\" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF8"
 

@@ -3,9 +3,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>did</artifactId>
-        <groupId>cn.ceres.did</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <artifactId>did-parent</artifactId>
+        <groupId>io.github.ehlxr</groupId>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,9 +14,8 @@
     <name>did-sdk</name>
     <dependencies>
         <dependency>
-            <groupId>cn.ceres.did</groupId>
+            <groupId>io.github.ehlxr</groupId>
             <artifactId>did-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -34,7 +33,7 @@
                     <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                     <artifactSet>
                         <includes>
-                            <include>cn.ceres.did:did-common</include>
+                            <include>io.github.ehlxr.did:did-common</include>
                         </includes>
                     </artifactSet>
                 </configuration>
