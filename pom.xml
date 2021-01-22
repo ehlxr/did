@@ -49,6 +49,15 @@
         </dependencies>
     </dependencyManagement>
 
+    <dependencies>
+        <!-- 为了 debug 调试-->
+        <dependency>
+            <groupId>com.github.github</groupId>
+            <artifactId>site-maven-plugin</artifactId>
+            <version>0.12</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
