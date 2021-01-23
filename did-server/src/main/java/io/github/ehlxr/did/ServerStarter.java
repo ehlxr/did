@@ -41,8 +41,11 @@ public class ServerStarter {
         sdkServer.init();
         sdkServer.start();
 
-        // 并行 shutdown server
         Runtime.getRuntime().addShutdownHook(new Thread(() ->
-                Arrays.stream(new Server[]{httpServer, sdkServer}).parallel().forEach(Server::shutdown)));
+                Arrays.stream(new Server[]{httpServer, sdkServer})
+                        // 并行 shutdown server
+                        .parallel()
+                        .forEach(Server::shutdown))
+        );
     }
 }
