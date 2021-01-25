@@ -8,9 +8,6 @@ workspace:
 steps:
   - name: build
     image: maven
-    volumes:
-      - name: m2_cache # The Volume's name
-        path: /root/.m2 # The path in the container
     commands:
     - mvn clean install -DskipTests -e -U
     - cp ./did-server/target/did-server*.jar ./docker
@@ -32,8 +29,8 @@ steps:
   # - name: deploy
   #   image: appleboy/drone-ssh
   #   settings:
-  #     host: xxx.xxx.xxx.xxx
-  #     username: xxx
+  #     host: xxx.xxxx.xx.xxx
+  #     username: xxxx
   #     password:
   #       from_secret: ssh_password
   #     port: 22
@@ -52,8 +49,3 @@ steps:
       status:
       - failure
       - success
-
-volumes:
-  - name: m2_cache # The name use in this pipeline,
-    host:
-      path: /m2_cache # The path be used in the host.
