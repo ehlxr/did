@@ -31,10 +31,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
-        String uri = getUriNoSprit(request);
-        logger.info("request uri is: {}", uri);
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        // if (Constants.HTTP_REQUEST.equals(uri)) {
         if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
             try {
                 long id = snowFlake.nextId();
@@ -50,9 +47,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             logger.warn(info);
             throw new Exception(info);
         }
-        // } else {
-        //     response.content().writeBytes(("Unsupported uri: " + uri).getBytes());
-        // }
 
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
@@ -62,14 +56,5 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         Channel channel = ctx.channel();
         logger.error("HttpServerHandler channel [{}] error and will be closed", NettyUtil.parseRemoteAddr(channel), cause);
         NettyUtil.closeChannel(channel);
-    }
-
-
-    private String getUriNoSprit(FullHttpRequest request) {
-        String uri = request.uri();
-        if (uri.startsWith("/")) {
-            uri = uri.substring(1);
-        }
-        return uri;
     }
 }

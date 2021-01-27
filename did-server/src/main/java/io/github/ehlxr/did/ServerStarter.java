@@ -29,16 +29,14 @@ public class ServerStarter {
         machineId = "".equals(Constants.getEnv("MACHINES_ID")) ? machineId : Long.parseLong(Constants.getEnv("MACHINES_ID"));
         logger.info("SnowFlake datacenterId is: {}, machineId is: {}", datacenterId, machineId);
 
-        final SnowFlake snowFlake = new SnowFlake(datacenterId, machineId);
+        final SnowFlake snowFlake = SnowFlake.newBuilder().datacenterId(datacenterId).machineId(machineId).build();
 
         // 启动 Http 服务器
-        final HttpServer httpServer = new HttpServer(snowFlake);
-        httpServer.init();
+        final Server httpServer = HttpServer.newBuilder().snowFlake(snowFlake).build();
         httpServer.start();
 
         // 启动 Sdk 服务器
-        final SdkServer sdkServer = new SdkServer(snowFlake);
-        sdkServer.init();
+        final Server sdkServer = SdkServer.newBuilder().snowFlake(snowFlake).build();
         sdkServer.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() ->

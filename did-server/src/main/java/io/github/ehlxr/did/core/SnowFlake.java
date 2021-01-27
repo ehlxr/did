@@ -139,4 +139,30 @@ public class SnowFlake {
         long end = System.currentTimeMillis();
         System.out.println(end - start);
     }
+
+    public static SnowFlakeBuilder newBuilder() {
+        return new SnowFlakeBuilder();
+    }
+
+    public static final class SnowFlakeBuilder {
+        private long datacenterId;
+        private long machineId;
+
+        private SnowFlakeBuilder() {
+        }
+
+        public SnowFlakeBuilder datacenterId(long datacenterId) {
+            this.datacenterId = datacenterId;
+            return this;
+        }
+
+        public SnowFlakeBuilder machineId(long machineId) {
+            this.machineId = machineId;
+            return this;
+        }
+
+        public SnowFlake build() {
+            return new SnowFlake(datacenterId, machineId);
+        }
+    }
 }
