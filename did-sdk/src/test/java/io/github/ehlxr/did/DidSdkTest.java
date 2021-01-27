@@ -18,7 +18,8 @@ public class DidSdkTest {
 
     @Before
     public void init() {
-        client = new SdkClient("127.0.0.1", 16831, 5000);
+        // client = new SdkClient("127.0.0.1", 16831, 5000);
+        client = SdkClient.newBuilder().build();
         client.start();
     }
 

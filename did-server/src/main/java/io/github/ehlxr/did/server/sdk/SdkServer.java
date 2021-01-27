@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 public class SdkServer extends BaseServer {
     protected Logger logger = LoggerFactory.getLogger(SdkServer.class);
-    private int port = "".equals(Constants.getEnv("SDK_PORT")) ? Constants.HTTP_PORT : Integer.parseInt(Constants.getEnv("SDK_PORT"));
+    private int port = "".equals(Constants.getEnv("SDK_PORT")) ? Constants.SDK_PORT : Integer.parseInt(Constants.getEnv("SDK_PORT"));
 
     public SdkServer(SnowFlake snowFlake) {
         this(snowFlake, 0);
@@ -25,7 +25,7 @@ public class SdkServer extends BaseServer {
         Objects.requireNonNull(snowFlake, "snowflake instance not allow null");
 
         this.snowFlake = snowFlake;
-        this.port = port == 0 ? this.port : port;
+        this.port = port <= 0 ? this.port : port;
     }
 
     public static SdkServerBuilder newBuilder() {
