@@ -31,7 +31,7 @@ public class SdkServerDecoder extends FixedLengthFrameDecoder {
         } catch (Exception e) {
             logger.error("decode exception, " + NettyUtil.parseRemoteAddr(ctx.channel()), e);
             NettyUtil.closeChannel(ctx.channel());
-        }finally {
+        } finally {
             if (buf != null) {
                 buf.release();
             }
@@ -42,7 +42,7 @@ public class SdkServerDecoder extends FixedLengthFrameDecoder {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         Channel channel = ctx.channel();
-        logger.error("SdkServerDecoder channel [{}] error and will be closed", NettyUtil.parseRemoteAddr(channel),cause);
+        logger.error("SdkServerDecoder channel [{}] error and will be closed", NettyUtil.parseRemoteAddr(channel), cause);
         NettyUtil.closeChannel(channel);
     }
 }

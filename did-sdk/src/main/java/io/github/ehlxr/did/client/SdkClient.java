@@ -57,11 +57,12 @@ public class SdkClient extends AbstractClient {
         });
 
         try {
-            channelFuture = bootstrap.connect(host, port).sync();
-
-            channelFuture.channel().closeFuture().addListener((ChannelFutureListener) channelFuture -> {
-                logger.warn("client channel close.", channelFuture.cause());
-            });
+            channelFuture = bootstrap.connect(host, port)
+                    .sync()
+                    .channel()
+                    .closeFuture()
+                    .addListener((ChannelFutureListener) channelFuture ->
+                            logger.warn("client channel close.", channelFuture.cause()));
 
             InetSocketAddress address = (InetSocketAddress) channelFuture.channel().remoteAddress();
             logger.info("SdkClient start success, host is {}, port is {}", address.getHostName(), address.getPort());

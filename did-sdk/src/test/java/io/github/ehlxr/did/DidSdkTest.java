@@ -31,14 +31,14 @@ public class DidSdkTest {
 
     @Test
     public void didSdkTest() throws Exception {
-        // 测试同步请求，关注rqid是否对应
+        // 测试同步请求
         for (int i = 0; i < NUM; i++) {
             Result<SdkProto> resultProto = client.invokeSync();
             System.out.println(resultProto);
         }
         System.out.println("invokeync test finish");
 
-        // 测试异步请求，关注rqid是否对应
+        // 测试异步请求
         final CountDownLatch countDownLatch = new CountDownLatch(NUM);
         for (int i = 0; i < NUM; i++) {
             client.invokeAsync(responseFuture -> {

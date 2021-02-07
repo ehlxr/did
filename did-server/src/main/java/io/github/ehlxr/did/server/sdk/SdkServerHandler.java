@@ -38,9 +38,8 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
 
             semaphore.release();
         } else {
-            String info = String.format("SdkServerHandler tryAcquire semaphore timeout, %dms, waiting thread " + "nums: %d availablePermit: %d",
+            logger.error("tryAcquire timeout after {}ms, {} threads waiting to acquire, {} permits available in this semaphore",
                     Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
-            logger.error(info);
         }
 
         ctx.channel().

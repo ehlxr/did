@@ -27,12 +27,18 @@ public class SdkProto {
         this.did = did;
     }
 
+    public static SdkProtoBuilder newBuilder() {
+        return new SdkProtoBuilder();
+    }
+
     public int getRqid() {
         return rqid;
     }
 
-    public static SdkProtoBuilder newBuilder() {
-        return new SdkProtoBuilder();
+    public void setRqid(int rqid) {
+        if (rqid > 0) {
+            this.rqid = rqid;
+        }
     }
 
     public long getDid() {
@@ -45,16 +51,7 @@ public class SdkProto {
 
     @Override
     public String toString() {
-        return "SdkProto{" +
-                "rqid=" + rqid +
-                ", did=" + did +
-                '}';
-    }
-
-    public void setRqid(int rqid) {
-        if (rqid > 0) {
-            this.rqid = rqid;
-        }
+        return JsonUtils.obj2String(this);
     }
 
     public static final class SdkProtoBuilder {

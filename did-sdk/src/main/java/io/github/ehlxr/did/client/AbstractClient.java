@@ -84,7 +84,7 @@ public abstract class AbstractClient implements Client {
     @Override
     public Result<SdkProto> invokeSync(long timeoutMillis) {
         final Channel channel = channelFuture.channel();
-        if (channel.isActive()) {
+        if (channel.isOpen() && channel.isActive()) {
             final SdkProto sdkProto = new SdkProto();
             final int rqid = sdkProto.getRqid();
             try {
@@ -115,7 +115,7 @@ public abstract class AbstractClient implements Client {
             }
         } else {
             NettyUtil.closeChannel(channel);
-            return Result.fail(NettyUtil.parseRemoteAddr(channel));
+            return Result.fail("channel " + NettyUtil.parseRemoteAddr(channel) + "is not active!");
         }
     }
 
@@ -133,37 +133,36 @@ public abstract class AbstractClient implements Client {
                         if (channelFuture.isSuccess()) {
                             return;
                         }
+
                         // 代码执行到些说明发送失败，需要释放资源
+                        logger.error("send a request command to channel <{}> failed.",
+                                NettyUtil.parseRemoteAddr(channel), channelFuture.cause());
+
                         REPONSE_MAP.remove(rqid);
                         responseFuture.setCause(channelFuture.cause());
                         responseFuture.putResponse(null);
 
-                        try {
-                            responseFuture.executeInvokeCallback();
-                        } catch (Exception e) {
-                            logger.warn("excute callback in writeAndFlush addListener, and callback throw", e);
-                        } finally {
-                            responseFuture.release();
-                        }
-                        logger.warn("send a request command to channel <{}> failed.",
-                                NettyUtil.parseRemoteAddr(channel), channelFuture.cause());
+                        responseFuture.executeInvokeCallback();
+                        responseFuture.release();
                     });
                 } catch (Exception e) {
                     responseFuture.release();
-                    logger.warn("send a request to channel <{}> Exception",
-                            NettyUtil.parseRemoteAddr(channel), e);
-                    throw new Exception(NettyUtil.parseRemoteAddr(channel), e);
+                    String msg = String.format("send a request to channel <%s> Exception",
+                            NettyUtil.parseRemoteAddr(channel));
+
+                    logger.error(msg, e);
+                    throw new Exception(msg, e);
                 }
             } else {
-                String info = String.format("invokeAsyncImpl tryAcquire semaphore timeout, %dms, waiting thread " +
+                String msg = String.format("invokeAsyncImpl tryAcquire semaphore timeout, %dms, waiting thread " +
                                 "nums: %d semaphoreAsyncValue: %d",
                         timeoutMillis, this.asyncSemaphore.getQueueLength(), this.asyncSemaphore.availablePermits());
-                logger.warn(info);
-                throw new Exception(info);
+                logger.error(msg);
+                throw new Exception(msg);
             }
         } else {
             NettyUtil.closeChannel(channel);
-            throw new Exception(NettyUtil.parseRemoteAddr(channel));
+            throw new Exception(String.format("channel %s is not active!", NettyUtil.parseRemoteAddr(channel)));
         }
     }
 

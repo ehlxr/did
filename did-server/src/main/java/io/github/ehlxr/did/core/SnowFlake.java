@@ -91,6 +91,20 @@ public class SnowFlake {
         this.machineId = machineId;
     }
 
+    public static void main(String[] args) {
+        SnowFlake snowFlake = new SnowFlake(2, 3);
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < (1 << 18); i++) {
+            System.out.println(i + ": " + snowFlake.nextId());
+        }
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
+    }
+
+    public static SnowFlakeBuilder newBuilder() {
+        return new SnowFlakeBuilder();
+    }
+
     /**
      * 产生下一个ID
      */
@@ -128,20 +142,6 @@ public class SnowFlake {
 
     private long getNewstmp() {
         return System.currentTimeMillis();
-    }
-
-    public static void main(String[] args) {
-        SnowFlake snowFlake = new SnowFlake(2, 3);
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < (1 << 18); i++) {
-            System.out.println(i + ": " + snowFlake.nextId());
-        }
-        long end = System.currentTimeMillis();
-        System.out.println(end - start);
-    }
-
-    public static SnowFlakeBuilder newBuilder() {
-        return new SnowFlakeBuilder();
     }
 
     public static final class SnowFlakeBuilder {

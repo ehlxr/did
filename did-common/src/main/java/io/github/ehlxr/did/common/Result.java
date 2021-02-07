@@ -1,13 +1,9 @@
 package io.github.ehlxr.did.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.util.internal.StringUtil;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 /**
@@ -16,6 +12,7 @@ import java.util.Objects;
  * @author ehlxr
  * @since 2020/3/18.
  */
+@SuppressWarnings("unused")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result<T> implements Serializable {
     private static final long serialVersionUID = -2758720512348727698L;
@@ -133,18 +130,7 @@ public class Result<T> implements Serializable {
 
     @Override
     public String toString() {
-        try {
-            ObjectMapper om = new ObjectMapper();
-            // 取消时间的转化格式, 默认是时间戳
-            om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            // 设置时间格式
-            om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-            om.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-            om.configure(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED, false);
-            return om.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            return "";
-        }
+        return JsonUtils.obj2String(this);
     }
 }
 

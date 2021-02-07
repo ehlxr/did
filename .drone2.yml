@@ -9,9 +9,9 @@ steps:
   - name: build
     image: maven
     commands:
-    - mvn clean install -DskipTests -e -U
-    - cp ./did-server/target/did-server*.jar ./docker
-    - echo -n "$(date -d @${DRONE_BUILD_CREATED} '+%Y%m%d_%H%M%S')_${DRONE_BUILD_NUMBER}, $(grep '<version>.*</version>' pom.xml | head -1 | awk -F '[>,<]' '{print $3}'), latest" > .tags
+      - mvn clean install -DskipTests -e -U
+      - cp ./did-server/target/did-server*.jar ./docker
+      - echo -n "$(date -d @${DRONE_BUILD_CREATED} '+%Y%m%d_%H%M%S')_${DRONE_BUILD_NUMBER}, $(grep '<version>.*</version>' pom.xml | head -1 | awk -F '[>,<]' '{print $3}'), latest" > .tags
 
   - name: docker
     image: plugins/docker
@@ -47,5 +47,5 @@ steps:
       type: markdown
     when:
       status:
-      - failure
-      - success
+        - failure
+        - success
