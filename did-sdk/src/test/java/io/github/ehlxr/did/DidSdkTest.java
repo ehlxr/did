@@ -51,7 +51,7 @@ public class DidSdkTest {
     }
 
     @Test
-    public void testInvoke() throws Exception {
+    public void testInvoke() {
         System.out.println(client.invoke());
 
         client.setTimeoutMillis(3000);
