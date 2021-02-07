@@ -62,7 +62,7 @@ public class DidSdkPressTest {
     }
 
     @Test
-    public void syncTest() throws Exception {
+    public void syncTest() {
         long start;
         long end;
         long cast;
