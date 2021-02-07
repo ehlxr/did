@@ -1,6 +1,7 @@
 package io.github.ehlxr.did;
 
 import io.github.ehlxr.did.client.SdkClient;
+import io.github.ehlxr.did.common.Result;
 import io.github.ehlxr.did.common.SdkProto;
 import org.junit.After;
 import org.junit.Before;
@@ -32,18 +33,17 @@ public class DidSdkTest {
     public void didSdkTest() throws Exception {
         // 测试同步请求，关注rqid是否对应
         for (int i = 0; i < NUM; i++) {
-            SdkProto resultProto = client.invokeSync();
-            System.out.println(i + " resultProto: " + resultProto);
+            Result<SdkProto> resultProto = client.invokeSync();
+            System.out.println(resultProto);
         }
         System.out.println("invokeync test finish");
 
         // 测试异步请求，关注rqid是否对应
         final CountDownLatch countDownLatch = new CountDownLatch(NUM);
         for (int i = 0; i < NUM; i++) {
-            final int finalI = i;
             client.invokeAsync(responseFuture -> {
                 countDownLatch.countDown();
-                System.out.println(finalI + " resultProto: " + responseFuture.getSdkProto());
+                System.out.println(responseFuture.getSdkProto());
             });
         }
         countDownLatch.await(10, TimeUnit.SECONDS);

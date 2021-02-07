@@ -37,7 +37,6 @@ public class HttpServer extends BaseServer {
         return new HttpServerBuilder();
     }
 
-
     @Override
     public void shutdown() {
         logger.info("HttpServer shutdowning......");
@@ -74,10 +73,6 @@ public class HttpServer extends BaseServer {
         private int port;
 
         private HttpServerBuilder() {
-        }
-
-        public static HttpServerBuilder aHttpServer() {
-            return new HttpServerBuilder();
         }
 
         public HttpServerBuilder snowFlake(SnowFlake snowFlake) {

@@ -31,8 +31,8 @@ public class SdkProto {
         return rqid;
     }
 
-    public void setRqid(int rqid) {
-        this.rqid = rqid;
+    public static SdkProtoBuilder newBuilder() {
+        return new SdkProtoBuilder();
     }
 
     public long getDid() {
@@ -49,5 +49,36 @@ public class SdkProto {
                 "rqid=" + rqid +
                 ", did=" + did +
                 '}';
+    }
+
+    public void setRqid(int rqid) {
+        if (rqid > 0) {
+            this.rqid = rqid;
+        }
+    }
+
+    public static final class SdkProtoBuilder {
+        private int rqid;
+        private long did;
+
+        private SdkProtoBuilder() {
+        }
+
+        public SdkProtoBuilder rqid(int rqid) {
+            this.rqid = rqid;
+            return this;
+        }
+
+        public SdkProtoBuilder did(long did) {
+            this.did = did;
+            return this;
+        }
+
+        public SdkProto build() {
+            SdkProto sdkProto = new SdkProto();
+            sdkProto.setRqid(rqid);
+            sdkProto.setDid(did);
+            return sdkProto;
+        }
     }
 }

@@ -2,6 +2,7 @@ package io.github.ehlxr.did.client;
 
 import io.github.ehlxr.did.common.Constants;
 import io.github.ehlxr.did.common.NettyUtil;
+import io.github.ehlxr.did.common.Result;
 import io.github.ehlxr.did.common.SdkProto;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -81,7 +82,7 @@ public abstract class AbstractClient implements Client {
     }
 
     @Override
-    public SdkProto invokeSync(long timeoutMillis) throws Exception {
+    public Result<SdkProto> invokeSync(long timeoutMillis) {
         final Channel channel = channelFuture.channel();
         if (channel.isActive()) {
             final SdkProto sdkProto = new SdkProto();
@@ -98,23 +99,23 @@ public abstract class AbstractClient implements Client {
                     REPONSE_MAP.remove(rqid);
                     responseFuture.putResponse(null);
                     responseFuture.setCause(channelFuture.cause());
-                    logger.warn("send a request command to channel <{}> failed.", NettyUtil.parseRemoteAddr(channel));
+                    logger.error("send a request command to channel <{}> failed.", NettyUtil.parseRemoteAddr(channel));
                 });
                 // 阻塞等待响应
-                SdkProto resultProto = responseFuture.waitResponse(timeoutMillis);
-                if (null == resultProto) {
-                    throw new Exception(NettyUtil.parseRemoteAddr(channel), responseFuture.getCause());
+                SdkProto proto = responseFuture.waitResponse(timeoutMillis);
+                if (null == proto) {
+                    return Result.fail("get result fail, addr is " + NettyUtil.parseRemoteAddr(channel) + responseFuture.getCause());
                 }
-                return resultProto;
+                return Result.success(proto);
             } catch (Exception e) {
                 logger.error("invokeSync fail, addr is " + NettyUtil.parseRemoteAddr(channel), e);
-                throw new Exception(NettyUtil.parseRemoteAddr(channel), e);
+                return Result.fail("invokeSync fail, addr is " + NettyUtil.parseRemoteAddr(channel) + e.getMessage());
             } finally {
                 REPONSE_MAP.remove(rqid);
             }
         } else {
             NettyUtil.closeChannel(channel);
-            throw new Exception(NettyUtil.parseRemoteAddr(channel));
+            return Result.fail(NettyUtil.parseRemoteAddr(channel));
         }
     }
 
@@ -166,11 +167,11 @@ public abstract class AbstractClient implements Client {
         }
     }
 
-    public long invoke() throws Exception {
+    public Result<SdkProto> invoke() {
         return invoke(timeoutMillis);
     }
 
-    public SdkProto invokeSync() throws Exception {
+    public Result<SdkProto> invokeSync() {
         return invokeSync(timeoutMillis);
     }
 

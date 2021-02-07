@@ -1,6 +1,7 @@
 package io.github.ehlxr.did.client;
 
 
+import io.github.ehlxr.did.common.Result;
 import io.github.ehlxr.did.common.SdkProto;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +30,7 @@ public interface Client {
      * @return {@link SdkProto}
      * @throws Exception 调用异常
      */
-    SdkProto invokeSync(long timeoutMillis) throws Exception;
+    Result<SdkProto> invokeSync(long timeoutMillis);
 
     /**
      * 异步调用
@@ -47,7 +48,7 @@ public interface Client {
      * @return id
      * @throws Exception 调用异常
      */
-    default long invoke(long timeoutMillis) throws Exception {
-        return invokeSync(timeoutMillis).getDid();
+    default Result<SdkProto> invoke(long timeoutMillis) {
+        return invokeSync(timeoutMillis);
     }
 }

@@ -34,22 +34,18 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, SdkProto sdkProto) throws Exception {
         if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
-            try {
-                sdkProto.setDid(snowFlake.nextId());
+            sdkProto.setDid(snowFlake.nextId());
 
-                ctx.channel().writeAndFlush(sdkProto).addListener((ChannelFutureListener) channelFuture -> semaphore.release());
-            } catch (Exception e) {
-                semaphore.release();
-                logger.error("SdkServerhandler error", e);
-            }
+            semaphore.release();
         } else {
-            sdkProto.setDid(-1);
-            ctx.channel().writeAndFlush(sdkProto);
             String info = String.format("SdkServerHandler tryAcquire semaphore timeout, %dms, waiting thread " + "nums: %d availablePermit: %d",
                     Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
-            logger.warn(info);
-            throw new Exception(info);
+            logger.error(info);
         }
+
+        ctx.channel().
+                writeAndFlush(sdkProto).
+                addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 
     @Override
