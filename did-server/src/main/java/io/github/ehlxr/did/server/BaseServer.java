@@ -1,5 +1,6 @@
 package io.github.ehlxr.did.server;
 
+import io.github.ehlxr.did.common.Try;
 import io.github.ehlxr.did.core.SnowFlake;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -52,9 +53,8 @@ public abstract class BaseServer implements Server {
             }
         });
 
-        serverBootstrap = new ServerBootstrap();
-
-        serverBootstrap.group(bossGroup, workGroup)
+        serverBootstrap = new ServerBootstrap()
+                .group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
                 // .option(ChannelOption.SO_KEEPALIVE, true)
                 // .option(ChannelOption.TCP_NODELAY, true)
@@ -64,15 +64,13 @@ public abstract class BaseServer implements Server {
 
     @Override
     public void shutdown() {
-        try {
+        Try.of(() -> {
             // 同步阻塞 shutdownGracefully 完成
             if (defLoopGroup != null) {
                 defLoopGroup.shutdownGracefully().sync();
             }
             bossGroup.shutdownGracefully().sync();
             workGroup.shutdownGracefully().sync();
-        } catch (Exception e) {
-            logger.error("Server EventLoopGroup shutdown error.", e);
-        }
+        }).trap(e -> logger.error("Server EventLoopGroup shutdown error.", e)).run();
     }
 }

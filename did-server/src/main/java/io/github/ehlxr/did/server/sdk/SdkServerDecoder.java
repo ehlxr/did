@@ -1,42 +1,30 @@
 package io.github.ehlxr.did.server.sdk;
 
 import io.github.ehlxr.did.common.NettyUtil;
-import io.github.ehlxr.did.common.SdkProto;
+import io.github.ehlxr.did.common.Try;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.FixedLengthFrameDecoder;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * @author ehlxr
  */
-public class SdkServerDecoder extends FixedLengthFrameDecoder {
-    private static final Logger logger = LoggerFactory.getLogger(SdkServerDecoder.class);
-
-    SdkServerDecoder(int frameLength) {
-        super(frameLength);
-    }
+public class SdkServerDecoder extends ByteToMessageDecoder {
+    private final Logger logger = LoggerFactory.getLogger(SdkServerDecoder.class);
 
     @Override
-    protected Object decode(ChannelHandlerContext ctx, ByteBuf in) {
-        ByteBuf buf = null;
-        try {
-            buf = (ByteBuf) super.decode(ctx, in);
-            if (buf == null) {
-                return null;
-            }
-            return new SdkProto(buf.readInt(), buf.readLong());
-        } catch (Exception e) {
-            logger.error("decode exception, " + NettyUtil.parseRemoteAddr(ctx.channel()), e);
-            NettyUtil.closeChannel(ctx.channel());
-        } finally {
-            if (buf != null) {
-                buf.release();
-            }
-        }
-        return null;
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+        Try.of(() -> {
+            byte[] bytes = new byte[in.readableBytes()];
+            in.readBytes(bytes);
+
+            out.add(NettyUtil.toObject(bytes));
+        }).trap(e -> logger.error("decode error", e)).run();
     }
 
     @Override

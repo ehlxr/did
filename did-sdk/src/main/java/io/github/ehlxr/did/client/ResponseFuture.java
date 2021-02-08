@@ -1,6 +1,7 @@
 package io.github.ehlxr.did.client;
 
 import io.github.ehlxr.did.common.SdkProto;
+import io.github.ehlxr.did.common.Try;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
@@ -46,8 +47,12 @@ public class ResponseFuture {
         }
     }
 
-    public SdkProto waitResponse(final long timeoutMillis) throws InterruptedException {
-        this.countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
+    public SdkProto waitResponse(final long timeoutMillis) {
+        Try.of(() -> {
+            if (!this.countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS)) {
+                setCause(new RuntimeException("timeout after wait " + timeoutMillis));
+            }
+        }).trap(this::setCause).run();
         return this.sdkProto;
     }
 

@@ -36,10 +36,12 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <root level="DEBUUG">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="ERROR"/>
         <appender-ref ref="NORMAL"/>
     </root>
+
+    <logger name="io.netty" level="OFF"/>
 
 </configuration>

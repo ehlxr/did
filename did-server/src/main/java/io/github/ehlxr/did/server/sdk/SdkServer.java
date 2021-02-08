@@ -1,6 +1,7 @@
 package io.github.ehlxr.did.server.sdk;
 
 import io.github.ehlxr.did.common.Constants;
+import io.github.ehlxr.did.common.Try;
 import io.github.ehlxr.did.core.SnowFlake;
 import io.github.ehlxr.did.server.BaseServer;
 import io.netty.channel.ChannelInitializer;
@@ -41,14 +42,15 @@ public class SdkServer extends BaseServer {
 
     @Override
     public void start() {
-        try {
+        Try.of(() -> {
             init();
 
             serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) {
                     ch.pipeline().addLast(defLoopGroup,
-                            new SdkServerDecoder(12),
+                            new SdkServerDecoder(),
+                            // new SdkServerDecoder(12),
                             new SdkServerEncoder(),
                             new SdkServerHandler(snowFlake)
                     );
@@ -57,9 +59,7 @@ public class SdkServer extends BaseServer {
 
             channelFuture = serverBootstrap.bind(port).sync();
             logger.info("SdkServer start success, port is:{}", port);
-        } catch (InterruptedException e) {
-            logger.error("SdkServer start fail,", e);
-        }
+        }).trap(e -> logger.error("SdkServer start fail,", e)).run();
     }
 
     public static final class SdkServerBuilder {

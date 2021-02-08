@@ -33,6 +33,8 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, SdkProto sdkProto) throws Exception {
+        logger.debug("sdk server handler receive sdkProto {}", sdkProto);
+
         if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
             sdkProto.setDid(snowFlake.nextId());
 
@@ -42,6 +44,7 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
                     Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
         }
 
+        logger.debug("sdk server handler write sdkProto {} to channel", sdkProto);
         ctx.channel().
                 writeAndFlush(sdkProto).
                 addListener(ChannelFutureListener.CLOSE_ON_FAILURE);

@@ -33,6 +33,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
+        logger.debug("http server handler receive request {}", request);
+
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON);
         Result<?> result;
@@ -48,23 +50,14 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         }
 
         if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
-            try {
-                long id = snowFlake.nextId();
-                logger.info("HttpServerHandler id is: {}", id);
+            long id = snowFlake.nextId();
 
-                status = HttpResponseStatus.OK;
-                result = Result.success(SdkProto.newBuilder().did(id).build());
-            } catch (Exception e) {
-                semaphore.release();
-                logger.error("HttpServerHandler error", e);
-
-                status = HttpResponseStatus.INTERNAL_SERVER_ERROR;
-                result = Result.fail(status.code(), status.reasonPhrase());
-            }
+            status = HttpResponseStatus.OK;
+            result = Result.success(SdkProto.newBuilder().did(id).build());
         } else {
             String info = String.format("HttpServerHandler tryAcquire semaphore timeout, %dms, waiting thread " + "nums: %d availablePermit: %d",
                     Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
-            logger.warn(info);
+            logger.error(info);
 
             status = HttpResponseStatus.SERVICE_UNAVAILABLE;
             result = Result.fail(status.code(), info);
@@ -73,6 +66,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         response.setStatus(status)
                 .content().writeBytes(result.toString().getBytes());
 
+        logger.debug("http server handler write response {} restul {} to channel", status, result);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 

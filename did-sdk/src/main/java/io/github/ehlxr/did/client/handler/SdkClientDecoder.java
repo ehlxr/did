@@ -25,49 +25,37 @@
 package io.github.ehlxr.did.client.handler;
 
 import io.github.ehlxr.did.common.NettyUtil;
-import io.github.ehlxr.did.common.SdkProto;
+import io.github.ehlxr.did.common.Try;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.FixedLengthFrameDecoder;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * @author ehlxr
  * @since 2021-01-20 14:42.
  */
-public class SdkClientDecoder extends FixedLengthFrameDecoder {
+public class SdkClientDecoder extends ByteToMessageDecoder {
     private final Logger logger = LoggerFactory.getLogger(SdkClientDecoder.class);
 
-    public SdkClientDecoder(int frameLength) {
-        super(frameLength);
-    }
-
     @Override
-    protected Object decode(ChannelHandlerContext ctx, ByteBuf in) {
-        ByteBuf buf = null;
-        try {
-            buf = (ByteBuf) super.decode(ctx, in);
-            if (buf == null) {
-                return null;
-            }
-            return new SdkProto(buf.readInt(), buf.readLong());
-        } catch (Exception e) {
-            logger.error("SdkClientDecoder decode exception, " + NettyUtil.parseRemoteAddr(ctx.channel()), e);
-            NettyUtil.closeChannel(ctx.channel());
-        } finally {
-            if (buf != null) {
-                buf.release();
-            }
-        }
-        return null;
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+        Try.of(() -> {
+            byte[] bytes = new byte[in.readableBytes()];
+            in.readBytes(bytes);
+
+            out.add(NettyUtil.toObject(bytes));
+        }).trap(e -> logger.error("decode error", e)).run();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         Channel channel = ctx.channel();
-        logger.error("SdkServerDecoder channel [{}] error and will be closed", NettyUtil.parseRemoteAddr(channel), cause);
+        logger.error("SdkClientDecoder channel [{}] error and will be closed", NettyUtil.parseRemoteAddr(channel), cause);
         NettyUtil.closeChannel(channel);
     }
 }

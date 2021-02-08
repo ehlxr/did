@@ -2,6 +2,7 @@ package io.github.ehlxr.did.server.sdk;
 
 import io.github.ehlxr.did.common.NettyUtil;
 import io.github.ehlxr.did.common.SdkProto;
+import io.github.ehlxr.did.common.Try;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,11 +16,11 @@ import org.slf4j.LoggerFactory;
 public class SdkServerEncoder extends MessageToByteEncoder<SdkProto> {
     private static final Logger logger = LoggerFactory.getLogger(SdkServerEncoder.class);
 
-
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, SdkProto sdkProto, ByteBuf out) {
-        out.writeInt(sdkProto.getRqid());
-        out.writeLong(sdkProto.getDid());
+        Try.of(() -> {
+            out.writeBytes(NettyUtil.toBytes(sdkProto));
+        }).trap(e -> logger.error("encode error", e)).run();
     }
 
     @Override

@@ -1,12 +1,14 @@
 package io.github.ehlxr.did.common;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author ehlxr
  */
-public class SdkProto {
+public class SdkProto implements Serializable {
     private static final AtomicInteger REQUEST_ID = new AtomicInteger(0);
+    private static final long serialVersionUID = 8986093068588745760L;
 
     /**
      * 请求的ID

@@ -1,6 +1,7 @@
 package io.github.ehlxr.did.server.http;
 
 import io.github.ehlxr.did.common.Constants;
+import io.github.ehlxr.did.common.Try;
 import io.github.ehlxr.did.core.SnowFlake;
 import io.github.ehlxr.did.server.BaseServer;
 import io.netty.channel.ChannelInitializer;
@@ -46,7 +47,7 @@ public class HttpServer extends BaseServer {
 
     @Override
     public void start() {
-        try {
+        Try.of(() -> {
             init();
 
             serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
@@ -63,9 +64,7 @@ public class HttpServer extends BaseServer {
 
             channelFuture = serverBootstrap.bind(port).sync();
             logger.info("HttpServer start success, port is:{}", port);
-        } catch (InterruptedException e) {
-            logger.error("HttpServer start fail,", e);
-        }
+        }).trap(e -> logger.error("HttpServer start fail,", e)).run();
     }
 
     public static final class HttpServerBuilder {

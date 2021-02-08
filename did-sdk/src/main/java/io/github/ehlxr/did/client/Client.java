@@ -28,7 +28,6 @@ public interface Client {
      *
      * @param timeoutMillis 超时时间
      * @return {@link SdkProto}
-     * @throws Exception 调用异常
      */
     Result<SdkProto> invokeSync(long timeoutMillis);
 
@@ -46,7 +45,6 @@ public interface Client {
      *
      * @param timeoutMillis 超时时间
      * @return id
-     * @throws Exception 调用异常
      */
     default Result<SdkProto> invoke(long timeoutMillis) {
         return invokeSync(timeoutMillis);

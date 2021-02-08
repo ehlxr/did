@@ -4,6 +4,7 @@ import io.github.ehlxr.did.client.handler.SdkClientDecoder;
 import io.github.ehlxr.did.client.handler.SdkClientEncoder;
 import io.github.ehlxr.did.client.handler.SdkClientHandler;
 import io.github.ehlxr.did.common.Constants;
+import io.github.ehlxr.did.common.Try;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -50,13 +51,14 @@ public class SdkClient extends AbstractClient {
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
-                socketChannel.pipeline().addLast("SdkServerDecoder", new SdkClientDecoder(12))
-                        .addLast("SdkServerEncoder", new SdkClientEncoder())
-                        .addLast("SdkClientHandler", new SdkClientHandler());
+                socketChannel.pipeline()
+                        .addLast(new SdkClientDecoder())
+                        .addLast(new SdkClientEncoder())
+                        .addLast(new SdkClientHandler());
             }
         });
 
-        try {
+        Try.of(() -> {
             channelFuture = bootstrap.connect(host, port)
                     .sync()
                     .channel()
@@ -66,10 +68,10 @@ public class SdkClient extends AbstractClient {
 
             InetSocketAddress address = (InetSocketAddress) channelFuture.channel().remoteAddress();
             logger.info("SdkClient start success, host is {}, port is {}", address.getHostName(), address.getPort());
-        } catch (InterruptedException e) {
+        }).trap(e -> {
             logger.error("SdkClient start error", e);
             shutdown();
-        }
+        }).run();
     }
 
     public static final class SdkClientBuilder {
