@@ -38,7 +38,7 @@ public class DidSdkTest {
 
         // 测试异步请求
         final CountDownLatch countDownLatch = new CountDownLatch(NUM);
-        IntStream.range(0, NUM).forEach(i ->
+        IntStream.range(0, NUM).parallel().forEach(i ->
                 Try.of(() -> client.invokeAsync(responseFuture -> {
                     System.out.println(responseFuture.getSdkProto());
                     countDownLatch.countDown();

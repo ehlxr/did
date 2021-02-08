@@ -1,6 +1,7 @@
 package io.github.ehlxr.did.server.sdk;
 
 import io.github.ehlxr.did.common.Constants;
+import io.github.ehlxr.did.netty.MyProtocolBean;
 import io.github.ehlxr.did.common.NettyUtil;
 import io.github.ehlxr.did.common.SdkProto;
 import io.github.ehlxr.did.core.SnowFlake;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author ehlxr
  */
-public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
+public class SdkServerHandler extends SimpleChannelInboundHandler<MyProtocolBean> {
     private static final Logger logger = LoggerFactory.getLogger(SdkServerHandler.class);
     /**
      * 通过信号量来控制流量
@@ -32,21 +33,23 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<SdkProto> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, SdkProto sdkProto) throws Exception {
-        logger.debug("sdk server handler receive sdkProto {}", sdkProto);
+    protected void channelRead0(ChannelHandlerContext ctx, MyProtocolBean protocolBean) throws Exception {
+        logger.debug("sdk server handler receive MyProtocolBean {}", protocolBean);
 
         if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
+            SdkProto sdkProto = (SdkProto) NettyUtil.toObject(protocolBean.getContent());
             sdkProto.setDid(snowFlake.nextId());
 
+            protocolBean.setContent(NettyUtil.toBytes(sdkProto));
             semaphore.release();
         } else {
             logger.error("tryAcquire timeout after {}ms, {} threads waiting to acquire, {} permits available in this semaphore",
                     Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
         }
 
-        logger.debug("sdk server handler write sdkProto {} to channel", sdkProto);
+        logger.debug("sdk server handler write protocolBean {} to channel", protocolBean);
         ctx.channel().
-                writeAndFlush(sdkProto).
+                writeAndFlush(protocolBean).
                 addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 

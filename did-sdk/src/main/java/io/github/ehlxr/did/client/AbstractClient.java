@@ -1,6 +1,7 @@
 package io.github.ehlxr.did.client;
 
 import io.github.ehlxr.did.common.*;
+import io.github.ehlxr.did.netty.MyProtocolBean;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -89,7 +90,10 @@ public abstract class AbstractClient implements Client {
                 REPONSE_MAP.put(rqid, responseFuture);
 
                 logger.debug("write {} to channel", sdkProto);
-                channel.writeAndFlush(sdkProto).addListener((ChannelFutureListener) channelFuture -> {
+
+                byte[] bytes = NettyUtil.toBytes(sdkProto);
+                MyProtocolBean myProtocolBean = new MyProtocolBean((byte)0xA, (byte)0xC, bytes.length, bytes);
+                channel.writeAndFlush(myProtocolBean).addListener((ChannelFutureListener) channelFuture -> {
                     if (channelFuture.isSuccess()) {
                         //发送成功后立即跳出
                         return;
@@ -132,7 +136,10 @@ public abstract class AbstractClient implements Client {
 
                 Try.of(() -> {
                     logger.debug("write {} to channel", sdkProto);
-                    channelFuture.channel().writeAndFlush(sdkProto).addListener(channelFuture -> {
+
+                    byte[] bytes = NettyUtil.toBytes(sdkProto);
+                    MyProtocolBean myProtocolBean = new MyProtocolBean((byte)0xA, (byte)0xC, bytes.length, bytes);
+                    channelFuture.channel().writeAndFlush(myProtocolBean).addListener(channelFuture -> {
                         if (channelFuture.isSuccess()) {
                             return;
                         }

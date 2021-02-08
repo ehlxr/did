@@ -22,12 +22,12 @@ public class SdkServerDecoder extends FixedLengthFrameDecoder {
     @Override
     protected Object decode(ChannelHandlerContext ctx, ByteBuf in) {
         return Try.of(() -> {
-            ByteBuf decode = (ByteBuf) super.decode(ctx, in);
+            ByteBuf buf = (ByteBuf) super.decode(ctx, in);
 
-            byte[] bytes = new byte[decode.readableBytes()];
-            decode.readBytes(bytes);
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.readBytes(bytes);
 
-            decode.release();
+            buf.release();
             return NettyUtil.toObject(bytes);
         }).trap(e -> logger.error("decode error", e)).get();
     }

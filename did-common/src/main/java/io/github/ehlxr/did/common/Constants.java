@@ -48,4 +48,10 @@ public class Constants {
      * 编码解码 byte 数组固定长度
      */
     public static int DECODER_FRAMELENGTH = 100;
+
+    public static final int MAX_FRAME_LENGTH = 1024 * 1024;  //最大长度
+    public static final int LENGTH_FIELD_LENGTH = 4;  //长度字段所占的字节数
+    public static final int LENGTH_FIELD_OFFSET = 2;  //长度偏移
+    public static final int LENGTH_ADJUSTMENT = 0;
+    public static final int INITIAL_BYTES_TO_STRIP = 0;
 }

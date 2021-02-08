@@ -47,19 +47,18 @@ public class NettyUtil {
         oos.writeObject(obj);
         oos.flush();
 
-        byte[] bytes = bos.toByteArray();
-        if (bytes.length > Constants.DECODER_FRAMELENGTH) {
-            logger.error("bytes length should not bigger than {}", Constants.DECODER_FRAMELENGTH);
-            return null;
-        } else if (bytes.length < Constants.DECODER_FRAMELENGTH) {
-            byte[] result = new byte[Constants.DECODER_FRAMELENGTH];
+        // if (bytes.length > Constants.DECODER_FRAMELENGTH) {
+        //     logger.error("bytes length should not bigger than {}", Constants.DECODER_FRAMELENGTH);
+        //     return null;
+        // } else if (bytes.length < Constants.DECODER_FRAMELENGTH) {
+        //     byte[] result = new byte[Constants.DECODER_FRAMELENGTH];
+        //
+        //     // 如果长度不足，填充
+        //     System.arraycopy(bytes, 0, result, 0, bytes.length);
+        //     return result;
+        // }
 
-            // 如果长度不足，填充
-            System.arraycopy(bytes, 0, result, 0, bytes.length);
-            return result;
-        }
-
-        return bytes;
+        return bos.toByteArray();
     }
 
     public static Object toObject(byte[] bts) throws IOException, ClassNotFoundException {

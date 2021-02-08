@@ -3,6 +3,8 @@ package io.github.ehlxr.did.server.sdk;
 import io.github.ehlxr.did.common.Constants;
 import io.github.ehlxr.did.common.Try;
 import io.github.ehlxr.did.core.SnowFlake;
+import io.github.ehlxr.did.netty.MyProtocolDecoder;
+import io.github.ehlxr.did.netty.MyProtocolEncoder;
 import io.github.ehlxr.did.server.BaseServer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -49,8 +51,11 @@ public class SdkServer extends BaseServer {
                 @Override
                 protected void initChannel(SocketChannel ch) {
                     ch.pipeline().addLast(defLoopGroup,
-                            new SdkServerDecoder(Constants.DECODER_FRAMELENGTH),// 如果长度不够会等待
-                            new SdkServerEncoder(),
+                            // new SdkServerDecoder(Constants.DECODER_FRAMELENGTH),// 如果长度不够会等待
+                            // new SdkServerEncoder(),
+                            new MyProtocolEncoder(),
+                            new MyProtocolDecoder(Constants.MAX_FRAME_LENGTH, Constants.LENGTH_FIELD_OFFSET,
+                                    Constants.LENGTH_FIELD_LENGTH, Constants.LENGTH_ADJUSTMENT, Constants.INITIAL_BYTES_TO_STRIP, false),
                             new SdkServerHandler(snowFlake)
                     );
                 }
