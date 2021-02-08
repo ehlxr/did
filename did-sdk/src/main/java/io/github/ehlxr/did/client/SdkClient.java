@@ -1,10 +1,10 @@
 package io.github.ehlxr.did.client;
 
-import io.github.ehlxr.did.netty.MyProtocolDecoder;
-import io.github.ehlxr.did.netty.MyProtocolEncoder;
 import io.github.ehlxr.did.client.handler.SdkClientHandler;
 import io.github.ehlxr.did.common.Constants;
 import io.github.ehlxr.did.common.Try;
+import io.github.ehlxr.did.netty.MyProtocolDecoder;
+import io.github.ehlxr.did.netty.MyProtocolEncoder;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;

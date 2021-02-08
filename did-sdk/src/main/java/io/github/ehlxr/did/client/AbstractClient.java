@@ -92,7 +92,7 @@ public abstract class AbstractClient implements Client {
                 logger.debug("write {} to channel", sdkProto);
 
                 byte[] bytes = NettyUtil.toBytes(sdkProto);
-                MyProtocolBean myProtocolBean = new MyProtocolBean((byte)0xA, (byte)0xC, bytes.length, bytes);
+                MyProtocolBean myProtocolBean = new MyProtocolBean((byte) 0xA, (byte) 0xC, bytes.length, bytes);
                 channel.writeAndFlush(myProtocolBean).addListener((ChannelFutureListener) channelFuture -> {
                     if (channelFuture.isSuccess()) {
                         //发送成功后立即跳出
@@ -138,7 +138,7 @@ public abstract class AbstractClient implements Client {
                     logger.debug("write {} to channel", sdkProto);
 
                     byte[] bytes = NettyUtil.toBytes(sdkProto);
-                    MyProtocolBean myProtocolBean = new MyProtocolBean((byte)0xA, (byte)0xC, bytes.length, bytes);
+                    MyProtocolBean myProtocolBean = new MyProtocolBean((byte) 0xA, (byte) 0xC, bytes.length, bytes);
                     channelFuture.channel().writeAndFlush(myProtocolBean).addListener(channelFuture -> {
                         if (channelFuture.isSuccess()) {
                             return;

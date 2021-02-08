@@ -6,6 +6,11 @@ import java.util.Map;
  * @author ehlxr
  */
 public class Constants {
+    public static final int MAX_FRAME_LENGTH = 1024 * 1024;  //最大长度
+    public static final int LENGTH_FIELD_LENGTH = 4;  //长度字段所占的字节数
+    public static final int LENGTH_FIELD_OFFSET = 2;  //长度偏移
+    public static final int LENGTH_ADJUSTMENT = 0;
+    public static final int INITIAL_BYTES_TO_STRIP = 0;
     private static final Map<String, String> SYS_ENV = System.getenv();
     public static String SERVER_HOST = "localhost";
     /**
@@ -36,22 +41,14 @@ public class Constants {
      * sdk client 默认超时时间
      */
     public static int SDK_CLIENT_TIMEOUTMILLIS = 2000;
-
+    /**
+     * 编码解码 byte 数组固定长度
+     */
+    public static int DECODER_FRAMELENGTH = 100;
     private Constants() {
     }
 
     public static String getEnv(String key) {
         return SYS_ENV.get(key) == null ? "" : SYS_ENV.get(key);
     }
-
-    /**
-     * 编码解码 byte 数组固定长度
-     */
-    public static int DECODER_FRAMELENGTH = 100;
-
-    public static final int MAX_FRAME_LENGTH = 1024 * 1024;  //最大长度
-    public static final int LENGTH_FIELD_LENGTH = 4;  //长度字段所占的字节数
-    public static final int LENGTH_FIELD_OFFSET = 2;  //长度偏移
-    public static final int LENGTH_ADJUSTMENT = 0;
-    public static final int INITIAL_BYTES_TO_STRIP = 0;
 }

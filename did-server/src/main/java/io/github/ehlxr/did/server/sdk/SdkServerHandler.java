@@ -1,10 +1,10 @@
 package io.github.ehlxr.did.server.sdk;
 
 import io.github.ehlxr.did.common.Constants;
-import io.github.ehlxr.did.netty.MyProtocolBean;
 import io.github.ehlxr.did.common.NettyUtil;
 import io.github.ehlxr.did.common.SdkProto;
 import io.github.ehlxr.did.core.SnowFlake;
+import io.github.ehlxr.did.netty.MyProtocolBean;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;

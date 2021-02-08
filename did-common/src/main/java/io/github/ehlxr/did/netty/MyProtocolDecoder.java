@@ -24,7 +24,6 @@
 
 package io.github.ehlxr.did.netty;
 
-import io.github.ehlxr.did.netty.MyProtocolBean;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
