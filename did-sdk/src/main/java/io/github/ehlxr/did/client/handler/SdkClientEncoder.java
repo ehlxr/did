@@ -44,7 +44,6 @@ public class SdkClientEncoder extends MessageToByteEncoder<SdkProto> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, SdkProto sdkProto, ByteBuf out) {
-        System.out.println("-------------");
         Try.of(() -> {
             out.writeBytes(NettyUtil.toBytes(sdkProto));
         }).trap(e -> logger.error("encode error", e)).run();

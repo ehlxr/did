@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 public class SdkServerEncoder extends MessageToByteEncoder<SdkProto> {
     private static final Logger logger = LoggerFactory.getLogger(SdkServerEncoder.class);
 
+
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, SdkProto sdkProto, ByteBuf out) {
         Try.of(() -> {

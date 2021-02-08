@@ -46,7 +46,20 @@ public class NettyUtil {
         ObjectOutputStream oos = new ObjectOutputStream(bos);
         oos.writeObject(obj);
         oos.flush();
-        return bos.toByteArray();
+
+        byte[] bytes = bos.toByteArray();
+        if (bytes.length > Constants.DECODER_FRAMELENGTH) {
+            logger.error("bytes length should not bigger than {}", Constants.DECODER_FRAMELENGTH);
+            return null;
+        } else if (bytes.length < Constants.DECODER_FRAMELENGTH) {
+            byte[] result = new byte[Constants.DECODER_FRAMELENGTH];
+
+            // 如果长度不足，填充
+            System.arraycopy(bytes, 0, result, 0, bytes.length);
+            return result;
+        }
+
+        return bytes;
     }
 
     public static Object toObject(byte[] bts) throws IOException, ClassNotFoundException {

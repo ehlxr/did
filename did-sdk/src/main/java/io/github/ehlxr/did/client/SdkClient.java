@@ -52,7 +52,7 @@ public class SdkClient extends AbstractClient {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
                 socketChannel.pipeline()
-                        .addLast(new SdkClientDecoder())
+                        .addLast(new SdkClientDecoder(Constants.DECODER_FRAMELENGTH)) //  如果长度不够会等待
                         .addLast(new SdkClientEncoder())
                         .addLast(new SdkClientHandler());
             }

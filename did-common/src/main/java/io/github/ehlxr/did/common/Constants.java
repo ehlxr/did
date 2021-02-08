@@ -43,4 +43,9 @@ public class Constants {
     public static String getEnv(String key) {
         return SYS_ENV.get(key) == null ? "" : SYS_ENV.get(key);
     }
+
+    /**
+     * 编码解码 byte 数组固定长度
+     */
+    public static int DECODER_FRAMELENGTH = 100;
 }

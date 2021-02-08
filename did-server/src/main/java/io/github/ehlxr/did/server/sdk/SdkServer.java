@@ -49,8 +49,7 @@ public class SdkServer extends BaseServer {
                 @Override
                 protected void initChannel(SocketChannel ch) {
                     ch.pipeline().addLast(defLoopGroup,
-                            new SdkServerDecoder(),
-                            // new SdkServerDecoder(12),
+                            new SdkServerDecoder(Constants.DECODER_FRAMELENGTH),// 如果长度不够会等待
                             new SdkServerEncoder(),
                             new SdkServerHandler(snowFlake)
                     );

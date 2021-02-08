@@ -5,26 +5,31 @@ import io.github.ehlxr.did.common.Try;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.FixedLengthFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * @author ehlxr
  */
-public class SdkServerDecoder extends ByteToMessageDecoder {
-    private final Logger logger = LoggerFactory.getLogger(SdkServerDecoder.class);
+public class SdkServerDecoder extends FixedLengthFrameDecoder {
+    private static final Logger logger = LoggerFactory.getLogger(SdkServerDecoder.class);
+
+    SdkServerDecoder(int frameLength) {
+        super(frameLength);
+    }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-        Try.of(() -> {
-            byte[] bytes = new byte[in.readableBytes()];
-            in.readBytes(bytes);
+    protected Object decode(ChannelHandlerContext ctx, ByteBuf in) {
+        return Try.of(() -> {
+            ByteBuf decode = (ByteBuf) super.decode(ctx, in);
 
-            out.add(NettyUtil.toObject(bytes));
-        }).trap(e -> logger.error("decode error", e)).run();
+            byte[] bytes = new byte[decode.readableBytes()];
+            decode.readBytes(bytes);
+
+            decode.release();
+            return NettyUtil.toObject(bytes);
+        }).trap(e -> logger.error("decode error", e)).get();
     }
 
     @Override
