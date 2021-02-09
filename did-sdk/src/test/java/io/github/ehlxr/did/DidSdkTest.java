@@ -1,10 +1,13 @@
 package io.github.ehlxr.did;
 
 import io.github.ehlxr.did.client.SdkClient;
+import io.github.ehlxr.did.common.Try;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 /**
@@ -34,16 +37,16 @@ public class DidSdkTest {
         System.out.println("invokeync test finish");
 
         // 测试异步请求
-        // final CountDownLatch countDownLatch = new CountDownLatch(NUM);
-        // IntStream.range(0, NUM).parallel().forEach(i ->
-        //         Try.of(() -> client.invokeAsync(responseFuture -> {
-        //             System.out.println(responseFuture.getSdkProto());
-        //             countDownLatch.countDown();
-        //         })).trap(Throwable::printStackTrace).run());
-        //
-        // //noinspection ResultOfMethodCallIgnored
-        // countDownLatch.await(10, TimeUnit.SECONDS);
-        // System.out.println("invokeAsync test finish");
+        final CountDownLatch countDownLatch = new CountDownLatch(NUM);
+        IntStream.range(0, NUM).parallel().forEach(i ->
+                Try.of(() -> client.invokeAsync(responseFuture -> {
+                    System.out.println(responseFuture.getSdkProto());
+                    countDownLatch.countDown();
+                })).trap(Throwable::printStackTrace).run());
+
+        //noinspection ResultOfMethodCallIgnored
+        countDownLatch.await(10, TimeUnit.SECONDS);
+        System.out.println("invokeAsync test finish");
     }
 
     @Test

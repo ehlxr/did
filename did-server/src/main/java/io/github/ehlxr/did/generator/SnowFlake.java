@@ -1,4 +1,4 @@
-package io.github.ehlxr.did;
+package io.github.ehlxr.did.generator;
 
 /**
  * twitter 的 snowflake 算法 -- java 实现

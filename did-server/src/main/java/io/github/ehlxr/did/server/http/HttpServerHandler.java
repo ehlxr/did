@@ -1,7 +1,7 @@
 package io.github.ehlxr.did.server.http;
 
 import io.github.ehlxr.did.SdkProto;
-import io.github.ehlxr.did.SnowFlake;
+import io.github.ehlxr.did.generator.SnowFlake;
 import io.github.ehlxr.did.common.Constants;
 import io.github.ehlxr.did.common.NettyUtil;
 import io.github.ehlxr.did.common.Result;
@@ -66,14 +66,14 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         response.setStatus(status)
                 .content().writeBytes(result.toString().getBytes());
 
-        logger.debug("http server handler write response {} restul {} to channel", status, result);
+        logger.debug("http server handler write response {} result {} to channel", status, result);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         Channel channel = ctx.channel();
-        logger.error("HttpServerHandler channel [{}] error and will be closed", NettyUtil.parseRemoteAddr(channel), cause);
+        logger.error("channel {} will be closed, 'cause of ", NettyUtil.parseRemoteAddr(channel), cause);
         NettyUtil.closeChannel(channel);
     }
 }

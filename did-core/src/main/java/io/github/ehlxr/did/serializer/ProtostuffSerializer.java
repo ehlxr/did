@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ehlxr
  * @since 2021-02-09 11:07.
  */
-public class ProtobufSerializer implements Serializer {
+public class ProtostuffSerializer implements Serializer {
     private static final Map<Class<?>, Schema<?>> CACHED_SCHEMA = new ConcurrentHashMap<>();
 
     @Override

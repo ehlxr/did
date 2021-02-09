@@ -6,7 +6,7 @@ import io.github.ehlxr.did.extension.SPI;
  * @author ehlxr
  * @since 2021-02-08 22:12.
  */
-@SPI("jdk")
+@SPI("protostuff")
 public interface Serializer {
     /**
      * 将 obj 序列化成 byte 数组

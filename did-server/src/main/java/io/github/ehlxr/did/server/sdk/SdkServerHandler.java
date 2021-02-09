@@ -1,10 +1,10 @@
 package io.github.ehlxr.did.server.sdk;
 
 import io.github.ehlxr.did.SdkProto;
-import io.github.ehlxr.did.SnowFlake;
 import io.github.ehlxr.did.adapter.Message;
 import io.github.ehlxr.did.common.Constants;
 import io.github.ehlxr.did.common.NettyUtil;
+import io.github.ehlxr.did.generator.SnowFlake;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -56,7 +56,7 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<Message<SdkPro
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         Channel channel = ctx.channel();
-        logger.error("SdkServerHandler channel [{}] error and will be closed", NettyUtil.parseRemoteAddr(channel), cause);
+        logger.error("channel {} will be closed, 'cause of ", NettyUtil.parseRemoteAddr(channel), cause);
         NettyUtil.closeChannel(channel);
     }
 }

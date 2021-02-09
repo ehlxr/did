@@ -28,11 +28,11 @@ import java.lang.annotation.*;
 
 /**
  * 把一个接口标识成扩展点。
- * <p/>
- * 没有此注释的接口{@link ExtensionLoader}会拒绝接管。
+ * <p>
+ * 没有此注释的接口 {@link ExtensionLoader} 会拒绝接管
  *
+ * @author ehlxr
  * @see ExtensionLoader
- * @since 0.1.0
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -41,9 +41,6 @@ public @interface SPI {
 
     /**
      * the default extension name.
-     *
-     * @since 0.1.0
      */
     String value() default "";
-
 }
