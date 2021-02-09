@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * 异步请求压测
+ * 压测
  *
  * @author ehlxr
  */

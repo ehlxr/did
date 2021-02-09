@@ -12,6 +12,7 @@
         <module>did-server</module>
         <module>did-sdk</module>
         <module>did-common</module>
+        <module>did-core</module>
     </modules>
 
     <name>did-parent</name>
@@ -28,6 +29,7 @@
         <logback.version>1.1.7</logback.version>
         <junit.version>4.13.1</junit.version>
         <jackson.version>2.10.3</jackson.version>
+        <protostuff.version>1.7.2</protostuff.version>
     </properties>
 
     <dependencyManagement>
@@ -54,6 +56,11 @@
                 <version>${did.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.github.ehlxr</groupId>
+                <artifactId>did-core</artifactId>
+                <version>${did.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
@@ -63,6 +70,17 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.protostuff</groupId>
+                <artifactId>protostuff-core</artifactId>
+                <version>${protostuff.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.protostuff</groupId>
+                <artifactId>protostuff-runtime</artifactId>
+                <version>${protostuff.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

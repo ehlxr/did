@@ -22,27 +22,28 @@
  * THE SOFTWARE.
  */
 
-package io.github.ehlxr.did.netty;
+package io.github.ehlxr.did.extension;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
+import java.lang.annotation.*;
 
 /**
- * @author ehlxr
- * @since 2021-02-08 22:12.
+ * 把一个接口标识成扩展点。
+ * <p/>
+ * 没有此注释的接口{@link ExtensionLoader}会拒绝接管。
+ *
+ * @see ExtensionLoader
+ * @since 0.1.0
  */
-public class MyProtocolEncoder extends MessageToByteEncoder<MyProtocolBean> {
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface SPI {
 
-    @Override
-    protected void encode(ChannelHandlerContext ctx, MyProtocolBean msg, ByteBuf out) throws Exception {
-        if (msg == null) {
-            throw new Exception("msg is null");
-        }
-        out.writeByte(msg.getType());
-        out.writeByte(msg.getFlag());
-        out.writeInt(msg.getLength());
-        out.writeBytes(msg.getContent());
-    }
+    /**
+     * the default extension name.
+     *
+     * @since 0.1.0
+     */
+    String value() default "";
+
 }
-

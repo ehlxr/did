@@ -1,7 +1,11 @@
 package io.github.ehlxr.did.client;
 
-import io.github.ehlxr.did.common.*;
-import io.github.ehlxr.did.netty.MyProtocolBean;
+import io.github.ehlxr.did.SdkProto;
+import io.github.ehlxr.did.adapter.Message;
+import io.github.ehlxr.did.common.Constants;
+import io.github.ehlxr.did.common.NettyUtil;
+import io.github.ehlxr.did.common.Result;
+import io.github.ehlxr.did.common.Try;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -83,27 +87,25 @@ public abstract class AbstractClient implements Client {
         final Channel channel = channelFuture.channel();
         if (channel.isOpen() && channel.isActive()) {
             final SdkProto sdkProto = new SdkProto();
-            final int rqid = sdkProto.getRqid();
+            final int rqid = sdkProto.rqid();
 
             return Try.of(() -> {
                 final ResponseFuture responseFuture = new ResponseFuture(timeoutMillis, null, null);
                 REPONSE_MAP.put(rqid, responseFuture);
 
                 logger.debug("write {} to channel", sdkProto);
-
-                byte[] bytes = NettyUtil.toBytes(sdkProto);
-                MyProtocolBean myProtocolBean = new MyProtocolBean((byte) 0xA, (byte) 0xC, bytes.length, bytes);
-                channel.writeAndFlush(myProtocolBean).addListener((ChannelFutureListener) channelFuture -> {
-                    if (channelFuture.isSuccess()) {
-                        //发送成功后立即跳出
-                        return;
-                    }
-                    // 代码执行到此说明发送失败，需要释放资源
-                    REPONSE_MAP.remove(rqid);
-                    responseFuture.putResponse(null);
-                    responseFuture.setCause(channelFuture.cause());
-                    logger.error("send a request command to channel <{}> failed.", NettyUtil.parseRemoteAddr(channel));
-                });
+                channel.writeAndFlush(Message.newBuilder().type((byte) 0xA).flag((byte) 0xC).content(sdkProto).build())
+                        .addListener((ChannelFutureListener) channelFuture -> {
+                            if (channelFuture.isSuccess()) {
+                                //发送成功后立即跳出
+                                return;
+                            }
+                            // 代码执行到此说明发送失败，需要释放资源
+                            REPONSE_MAP.remove(rqid);
+                            responseFuture.putResponse(null);
+                            responseFuture.setCause(channelFuture.cause());
+                            logger.error("send a request command to channel <{}> failed.", NettyUtil.parseRemoteAddr(channel));
+                        });
 
                 // 阻塞等待响应
                 SdkProto proto = responseFuture.waitResponse(timeoutMillis);
@@ -129,31 +131,29 @@ public abstract class AbstractClient implements Client {
         final Channel channel = channelFuture.channel();
         if (channel.isOpen() && channel.isActive()) {
             final SdkProto sdkProto = new SdkProto();
-            final int rqid = sdkProto.getRqid();
+            final int rqid = sdkProto.rqid();
             if (asyncSemaphore.tryAcquire(timeoutMillis, TimeUnit.MILLISECONDS)) {
                 final ResponseFuture responseFuture = new ResponseFuture(timeoutMillis, invokeCallback, asyncSemaphore);
                 REPONSE_MAP.put(rqid, responseFuture);
 
                 Try.of(() -> {
                     logger.debug("write {} to channel", sdkProto);
+                    channelFuture.channel().writeAndFlush(Message.newBuilder().type((byte) 0xA).flag((byte) 0xC).content(sdkProto).build())
+                            .addListener(channelFuture -> {
+                                if (channelFuture.isSuccess()) {
+                                    return;
+                                }
 
-                    byte[] bytes = NettyUtil.toBytes(sdkProto);
-                    MyProtocolBean myProtocolBean = new MyProtocolBean((byte) 0xA, (byte) 0xC, bytes.length, bytes);
-                    channelFuture.channel().writeAndFlush(myProtocolBean).addListener(channelFuture -> {
-                        if (channelFuture.isSuccess()) {
-                            return;
-                        }
+                                // 代码执行到些说明发送失败，需要释放资源
+                                logger.error("send a request command to channel <{}> failed.",
+                                        NettyUtil.parseRemoteAddr(channel), channelFuture.cause());
 
-                        // 代码执行到些说明发送失败，需要释放资源
-                        logger.error("send a request command to channel <{}> failed.",
-                                NettyUtil.parseRemoteAddr(channel), channelFuture.cause());
-
-                        REPONSE_MAP.remove(rqid);
-                        responseFuture.setCause(channelFuture.cause());
-                        responseFuture.putResponse(null);
-                        responseFuture.executeInvokeCallback();
-                        responseFuture.release();
-                    });
+                                REPONSE_MAP.remove(rqid);
+                                responseFuture.setCause(channelFuture.cause());
+                                responseFuture.putResponse(null);
+                                responseFuture.executeInvokeCallback();
+                                responseFuture.release();
+                            });
                 }).trap(e -> {
                     responseFuture.release();
                     logger.error("send a request to channel <{}> Exception", NettyUtil.parseRemoteAddr(channel), e);

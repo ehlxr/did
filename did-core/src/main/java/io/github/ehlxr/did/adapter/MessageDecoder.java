@@ -22,58 +22,83 @@
  * THE SOFTWARE.
  */
 
-package io.github.ehlxr.did.netty;
+package io.github.ehlxr.did.adapter;
 
+import io.github.ehlxr.did.SdkProto;
+import io.github.ehlxr.did.common.Constants;
+import io.github.ehlxr.did.common.NettyUtil;
+import io.github.ehlxr.did.serializer.SerializerHolder;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author ehlxr
  * @since 2021-02-08 22:09.
  */
-public class MyProtocolDecoder extends LengthFieldBasedFrameDecoder {
+public class MessageDecoder extends LengthFieldBasedFrameDecoder {
     private static final int HEADER_SIZE = 6;
+    private static final Logger logger = LoggerFactory.getLogger(MessageDecoder.class);
 
     /**
      * @param maxFrameLength      帧的最大长度
-     * @param lengthFieldOffset   length字段偏移的地址
-     * @param lengthFieldLength   length字段所占的字节长
+     * @param lengthFieldOffset   length 字段偏移的地址
+     * @param lengthFieldLength   length 字段所占的字节长
      * @param lengthAdjustment    修改帧数据长度字段中定义的值，可以为负数 因为有时候我们习惯把头部记入长度,若为负数,则说明要推后多少个字段
      * @param initialBytesToStrip 解析时候跳过多少个长度
-     * @param failFast            为true，当frame长度超过maxFrameLength时立即报TooLongFrameException异常，为false，读取完整个帧再报异
+     * @param failFast            true，当 frame 长度超过 maxFrameLength 时立即报 TooLongFrameException 异常，
+     *                            false，读取完整个帧再报异
      */
 
-    public MyProtocolDecoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength,
-                             int lengthAdjustment, int initialBytesToStrip, boolean failFast) {
+    public MessageDecoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength,
+                          int lengthAdjustment, int initialBytesToStrip, boolean failFast) {
         super(maxFrameLength, lengthFieldOffset, lengthFieldLength, lengthAdjustment, initialBytesToStrip, failFast);
+    }
+
+    public MessageDecoder() {
+        super(Constants.MAX_FRAME_LENGTH, Constants.LENGTH_FIELD_OFFSET, Constants.LENGTH_FIELD_LENGTH,
+                Constants.LENGTH_ADJUSTMENT, Constants.INITIAL_BYTES_TO_STRIP, false);
     }
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
-        //在这里调用父类的方法,实现指得到想要的部分,我在这里全部都要,也可以只要body部分
+        // 在这里调用父类的方法,实现指得到想要的部分,我在这里全部都要,也可以只要 body 部分
         in = (ByteBuf) super.decode(ctx, in);
 
         if (in == null) {
             return null;
         }
         if (in.readableBytes() < HEADER_SIZE) {
-            throw new Exception("字节数不足");
+            throw new IllegalArgumentException("decode failed 'cause of insufficient readable bytes");
         }
-        //读取type字段
+        // 读取 type 字段
         byte type = in.readByte();
-        //读取flag字段
+        // 读取 flag 字段
         byte flag = in.readByte();
-        //读取length字段
+        // 读取 length 字段
         int length = in.readInt();
 
         if (in.readableBytes() != length) {
-            throw new Exception("标记的长度不符合实际长度");
+            throw new IllegalArgumentException("the length of the readable bytes does not match the actual length");
         }
-        //读取body
+        // 读取 body
         byte[] bytes = new byte[in.readableBytes()];
         in.readBytes(bytes);
 
-        return new MyProtocolBean(type, flag, length, bytes);
+        return Message.newBuilder()
+                .type(type)
+                .flag(flag)
+                .content(SerializerHolder.get().deserializer(bytes, SdkProto.class))
+                .build();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        Channel channel = ctx.channel();
+        logger.error("channel {} will be closed, 'cause of ", NettyUtil.parseRemoteAddr(channel), cause);
+        NettyUtil.closeChannel(channel);
     }
 }

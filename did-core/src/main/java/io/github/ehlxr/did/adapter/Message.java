@@ -22,33 +22,51 @@
  * THE SOFTWARE.
  */
 
-package io.github.ehlxr.did.netty;
+package io.github.ehlxr.did.adapter;
 
-import io.github.ehlxr.did.common.NettyUtil;
 import io.github.ehlxr.did.common.Try;
+import io.github.ehlxr.did.serializer.SerializerHolder;
+
+import java.io.Serializable;
 
 /**
  * @author ehlxr
  * @since 2021-02-08 22:07.
  */
-public class MyProtocolBean {
-    // 类型（系统编号 0xA 表示A系统，0xB 表示B系统）
+public class Message<T> implements Serializable {
+    private static final long serialVersionUID = 2419320297359425651L;
+
+    /**
+     * 类型（例如：0xA 表示 A 系统；0xB 表示 B 系统）
+     */
     private byte type;
 
-    // 信息标志  0xA 表示心跳包 0xB 表示超时包  0xC 业务信息包
+    /**
+     * 信息标志（例如：0xA 表示心跳包；0xB 表示超时包；0xC 业务信息包）
+     */
     private byte flag;
 
-    // 内容长度
+    /**
+     * 内容长度（通过 content 计算而来）
+     */
     private int length;
 
-    // 内容
-    private byte[] content;
+    /**
+     * 消息内容
+     */
+    private T content;
 
-    public MyProtocolBean(byte type, byte flag, int length, byte[] content) {
+    public Message(byte type, byte flag, T content) {
         this.type = type;
         this.flag = flag;
-        this.length = length;
         this.content = content;
+    }
+
+    public Message() {
+    }
+
+    public static <T> MessageBuilder<T> newBuilder() {
+        return new MessageBuilder<>();
     }
 
     public byte getType() {
@@ -68,28 +86,60 @@ public class MyProtocolBean {
     }
 
     public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
+        return getContent().length;
     }
 
     public byte[] getContent() {
-        return content;
+        return Try.<T, byte[]>of(SerializerHolder.get()::serializer).apply(content).get();
     }
 
-    public void setContent(byte[] content) {
+    public void setContent(T content) {
         this.content = content;
+    }
+
+    public T content(Class<T> clazz) {
+        return SerializerHolder.get().deserializer(getContent(), clazz);
     }
 
     @Override
     public String toString() {
-        return "MyProtocolBean{" +
+        return "Message{" +
                 "type=" + type +
                 ", flag=" + flag +
                 ", length=" + length +
-                ", content=" + Try.of(NettyUtil::toObject).apply(content).get() +
+                ", content=" + content +
                 '}';
+    }
+
+    public static final class MessageBuilder<T> {
+        private byte type;
+        private byte flag;
+        private T content;
+
+        private MessageBuilder() {
+        }
+
+        public MessageBuilder<T> type(byte type) {
+            this.type = type;
+            return this;
+        }
+
+        public MessageBuilder<T> flag(byte flag) {
+            this.flag = flag;
+            return this;
+        }
+
+        public MessageBuilder<T> content(T content) {
+            this.content = content;
+            return this;
+        }
+
+        public Message<T> build() {
+            Message<T> message = new Message<>();
+            message.setType(type);
+            message.setFlag(flag);
+            message.setContent(content);
+            return message;
+        }
     }
 }

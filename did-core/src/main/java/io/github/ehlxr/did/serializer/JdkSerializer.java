@@ -22,39 +22,41 @@
  * THE SOFTWARE.
  */
 
-package io.github.ehlxr.did.client.handler;
+package io.github.ehlxr.did.serializer;
 
-import io.github.ehlxr.did.client.SdkClient;
-import io.github.ehlxr.did.common.NettyUtil;
-import io.github.ehlxr.did.common.SdkProto;
 import io.github.ehlxr.did.common.Try;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * @author ehlxr
- * @since 2021-01-20 14:43.
+ * @since 2021-02-09 11:07.
  */
-public class SdkClientEncoder extends MessageToByteEncoder<SdkProto> {
-    private final Logger logger = LoggerFactory.getLogger(SdkClient.class);
-
+public class JdkSerializer implements Serializer {
     @Override
-    protected void encode(ChannelHandlerContext ctx, SdkProto sdkProto, ByteBuf out) {
-        Try.of(() -> {
-            out.writeBytes(NettyUtil.toBytes(sdkProto));
-        }).trap(e -> logger.error("encode error", e)).run();
+    public <T> byte[] serializer(T obj) {
+        return Try.<T, byte[]>of(o -> {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(obj);
+            oos.flush();
+
+            return bos.toByteArray();
+        }).trap(Throwable::printStackTrace).apply(obj).get();
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        Channel channel = ctx.channel();
-        logger.error(String.format("SdkServerEncoder channel [%s] error and will be closed",
-                NettyUtil.parseRemoteAddr(channel)), cause);
+    public <T> T deserializer(byte[] bytes, Class<T> clazz) {
+        return Try.<byte[], T>of(bs -> {
+            ByteArrayInputStream bis = new ByteArrayInputStream(bs);
+            ObjectInputStream ois = new ObjectInputStream(bis);
 
-        NettyUtil.closeChannel(channel);
+            Object o = ois.readObject();
+            return clazz.isInstance(o) ? clazz.cast(o) : null;
+        }).trap(Throwable::printStackTrace).apply(bytes).get();
+
     }
 }

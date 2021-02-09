@@ -24,12 +24,12 @@
 
 package io.github.ehlxr.did.client.handler;
 
+import io.github.ehlxr.did.SdkProto;
+import io.github.ehlxr.did.adapter.Message;
 import io.github.ehlxr.did.client.Client;
 import io.github.ehlxr.did.client.ResponseFuture;
 import io.github.ehlxr.did.common.NettyUtil;
-import io.github.ehlxr.did.common.SdkProto;
 import io.github.ehlxr.did.common.Try;
-import io.github.ehlxr.did.netty.MyProtocolBean;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -39,17 +39,16 @@ import org.slf4j.LoggerFactory;
  * @author ehlxr
  * @since 2021-01-20 14:43.
  */
-public class SdkClientHandler extends SimpleChannelInboundHandler<MyProtocolBean> {
+public class SdkClientHandler extends SimpleChannelInboundHandler<Message<SdkProto>> {
     private final Logger logger = LoggerFactory.getLogger(SdkClientHandler.class);
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, MyProtocolBean protocolBean) {
-        logger.debug("sdk client handler receive protocolBean {}", protocolBean);
+    protected void channelRead0(ChannelHandlerContext ctx, Message<SdkProto> message) {
+        logger.debug("sdk client handler receive message {}", message);
 
-        SdkProto sdkProto = Try.<MyProtocolBean, SdkProto>of(p ->
-                (SdkProto) NettyUtil.toObject(p.getContent()))
-                .apply(protocolBean)
-                .get(SdkProto.newBuilder().build());
+        SdkProto sdkProto = Try.<Message<SdkProto>, SdkProto>of(m -> m.content(SdkProto.class))
+                .apply(message)
+                .get();
 
         final int rqid = sdkProto.getRqid();
         final ResponseFuture responseFuture = Client.REPONSE_MAP.get(rqid);
@@ -67,7 +66,7 @@ public class SdkClientHandler extends SimpleChannelInboundHandler<MyProtocolBean
             }
         } else {
             logger.error("receive response {}, but not matched any request, address is {}",
-                    protocolBean, NettyUtil.parseRemoteAddr(ctx.channel()));
+                    message, NettyUtil.parseRemoteAddr(ctx.channel()));
         }
     }
 

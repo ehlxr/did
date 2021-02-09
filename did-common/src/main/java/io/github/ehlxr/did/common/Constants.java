@@ -45,6 +45,7 @@ public class Constants {
      * 编码解码 byte 数组固定长度
      */
     public static int DECODER_FRAMELENGTH = 100;
+
     private Constants() {
     }
 

@@ -1,0 +1,2 @@
+jdk=io.github.ehlxr.did.serializer.JdkSerializer
+protobuf=io.github.ehlxr.did.serializer.ProtobufSerializer

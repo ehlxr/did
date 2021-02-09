@@ -1,7 +1,6 @@
 package io.github.ehlxr.did;
 
 import io.github.ehlxr.did.common.Constants;
-import io.github.ehlxr.did.core.SnowFlake;
 import io.github.ehlxr.did.server.Server;
 import io.github.ehlxr.did.server.http.HttpServer;
 import io.github.ehlxr.did.server.sdk.SdkServer;

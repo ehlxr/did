@@ -1,4 +1,6 @@
-package io.github.ehlxr.did.common;
+package io.github.ehlxr.did;
+
+import io.github.ehlxr.did.common.JsonUtils;
 
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,13 +22,6 @@ public class SdkProto implements Serializable {
     private long did;
 
     public SdkProto() {
-        rqid = REQUEST_ID.incrementAndGet();
-        did = 0;
-    }
-
-    public SdkProto(int rqid, long did) {
-        this.rqid = rqid;
-        this.did = did;
     }
 
     public static SdkProtoBuilder newBuilder() {
@@ -37,10 +32,9 @@ public class SdkProto implements Serializable {
         return rqid;
     }
 
-    public void setRqid(int rqid) {
-        if (rqid > 0) {
-            this.rqid = rqid;
-        }
+    public int rqid() {
+        rqid = REQUEST_ID.incrementAndGet();
+        return rqid;
     }
 
     public long getDid() {
@@ -57,15 +51,9 @@ public class SdkProto implements Serializable {
     }
 
     public static final class SdkProtoBuilder {
-        private int rqid;
         private long did;
 
         private SdkProtoBuilder() {
-        }
-
-        public SdkProtoBuilder rqid(int rqid) {
-            this.rqid = rqid;
-            return this;
         }
 
         public SdkProtoBuilder did(long did) {
@@ -75,7 +63,6 @@ public class SdkProto implements Serializable {
 
         public SdkProto build() {
             SdkProto sdkProto = new SdkProto();
-            sdkProto.setRqid(rqid);
             sdkProto.setDid(did);
             return sdkProto;
         }

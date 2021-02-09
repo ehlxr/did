@@ -1,6 +1,6 @@
 package io.github.ehlxr.did.client;
 
-import io.github.ehlxr.did.common.SdkProto;
+import io.github.ehlxr.did.SdkProto;
 import io.github.ehlxr.did.common.Try;
 
 import java.util.concurrent.CountDownLatch;

@@ -1,8 +1,8 @@
 package io.github.ehlxr.did.client;
 
 
+import io.github.ehlxr.did.SdkProto;
 import io.github.ehlxr.did.common.Result;
-import io.github.ehlxr.did.common.SdkProto;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

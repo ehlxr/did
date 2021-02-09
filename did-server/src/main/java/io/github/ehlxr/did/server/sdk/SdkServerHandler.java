@@ -1,10 +1,10 @@
 package io.github.ehlxr.did.server.sdk;
 
+import io.github.ehlxr.did.SdkProto;
+import io.github.ehlxr.did.SnowFlake;
+import io.github.ehlxr.did.adapter.Message;
 import io.github.ehlxr.did.common.Constants;
 import io.github.ehlxr.did.common.NettyUtil;
-import io.github.ehlxr.did.common.SdkProto;
-import io.github.ehlxr.did.core.SnowFlake;
-import io.github.ehlxr.did.netty.MyProtocolBean;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author ehlxr
  */
-public class SdkServerHandler extends SimpleChannelInboundHandler<MyProtocolBean> {
+public class SdkServerHandler extends SimpleChannelInboundHandler<Message<SdkProto>> {
     private static final Logger logger = LoggerFactory.getLogger(SdkServerHandler.class);
     /**
      * 通过信号量来控制流量
@@ -33,23 +33,23 @@ public class SdkServerHandler extends SimpleChannelInboundHandler<MyProtocolBean
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, MyProtocolBean protocolBean) throws Exception {
-        logger.debug("sdk server handler receive MyProtocolBean {}", protocolBean);
+    protected void channelRead0(ChannelHandlerContext ctx, Message<SdkProto> message) throws Exception {
+        logger.debug("sdk server handler receive message {}", message);
 
         if (semaphore.tryAcquire(Constants.ACQUIRE_TIMEOUTMILLIS, TimeUnit.MILLISECONDS)) {
-            SdkProto sdkProto = (SdkProto) NettyUtil.toObject(protocolBean.getContent());
+            SdkProto sdkProto = message.content(SdkProto.class);
             sdkProto.setDid(snowFlake.nextId());
 
-            protocolBean.setContent(NettyUtil.toBytes(sdkProto));
+            message.setContent(sdkProto);
             semaphore.release();
         } else {
             logger.error("tryAcquire timeout after {}ms, {} threads waiting to acquire, {} permits available in this semaphore",
                     Constants.ACQUIRE_TIMEOUTMILLIS, this.semaphore.getQueueLength(), this.semaphore.availablePermits());
         }
 
-        logger.debug("sdk server handler write protocolBean {} to channel", protocolBean);
+        logger.debug("sdk server handler write message {} to channel", message);
         ctx.channel().
-                writeAndFlush(protocolBean).
+                writeAndFlush(message).
                 addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 

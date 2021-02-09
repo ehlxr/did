@@ -5,7 +5,6 @@ import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.net.SocketAddress;
 
 /**
@@ -39,32 +38,5 @@ public class NettyUtil {
         channel.close().addListener((ChannelFutureListener) future ->
                 logger.info("closeChannel: close the connection to remote address[{}] result: {}",
                         addrRemote, future.isSuccess()));
-    }
-
-    public static byte[] toBytes(Object obj) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(obj);
-        oos.flush();
-
-        // if (bytes.length > Constants.DECODER_FRAMELENGTH) {
-        //     logger.error("bytes length should not bigger than {}", Constants.DECODER_FRAMELENGTH);
-        //     return null;
-        // } else if (bytes.length < Constants.DECODER_FRAMELENGTH) {
-        //     byte[] result = new byte[Constants.DECODER_FRAMELENGTH];
-        //
-        //     // 如果长度不足，填充
-        //     System.arraycopy(bytes, 0, result, 0, bytes.length);
-        //     return result;
-        // }
-
-        return bos.toByteArray();
-    }
-
-    public static Object toObject(byte[] bts) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bis = new ByteArrayInputStream(bts);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-
-        return ois.readObject();
     }
 }

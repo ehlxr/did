@@ -1,10 +1,10 @@
 package io.github.ehlxr.did.client;
 
+import io.github.ehlxr.did.adapter.MessageDecoder;
+import io.github.ehlxr.did.adapter.MessageEncoder;
 import io.github.ehlxr.did.client.handler.SdkClientHandler;
 import io.github.ehlxr.did.common.Constants;
 import io.github.ehlxr.did.common.Try;
-import io.github.ehlxr.did.netty.MyProtocolDecoder;
-import io.github.ehlxr.did.netty.MyProtocolEncoder;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -52,11 +52,8 @@ public class SdkClient extends AbstractClient {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
                 socketChannel.pipeline()
-                        // .addLast(new SdkClientDecoder(Constants.DECODER_FRAMELENGTH)) //  如果长度不够会等待
-                        // .addLast(new SdkClientEncoder())
-                        .addLast(new MyProtocolEncoder())
-                        .addLast(new MyProtocolDecoder(Constants.MAX_FRAME_LENGTH, Constants.LENGTH_FIELD_OFFSET,
-                                Constants.LENGTH_FIELD_LENGTH, Constants.LENGTH_ADJUSTMENT, Constants.INITIAL_BYTES_TO_STRIP, false))
+                        .addLast(new MessageEncoder())
+                        .addLast(new MessageDecoder())
                         .addLast(new SdkClientHandler());
             }
         });

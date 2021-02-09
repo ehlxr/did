@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.ehlxr</groupId>
-            <artifactId>did-common</artifactId>
+            <artifactId>did-core</artifactId>
         </dependency>
     </dependencies>
 
