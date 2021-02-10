@@ -18,6 +18,12 @@
             <groupId>io.github.ehlxr</groupId>
             <artifactId>did-core</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,6 +1,7 @@
 package io.github.ehlxr.did;
 
 import io.github.ehlxr.did.client.SdkClient;
+import io.github.ehlxr.did.common.Try;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.IntStream;
 
 /**
  * 压测
@@ -30,63 +33,59 @@ public class DidSdkPressTest {
     }
 
     @Test
-    public void asyncTest() throws Exception {
-        long start;
-        long end;
-        long cast;
-        long amount = 0;
-        long allcast = 0;
+    public void syncTest() {
+        int nums = 6000;
+        int round = 10;
 
-        for (int k = 0; k < 10; k++) {
-            // 初始发送总量
-            int NUM = 80000;
-            final CountDownLatch countDownLatch = new CountDownLatch(NUM);
-            start = System.currentTimeMillis();
-            for (int i = 0; i < NUM; i++) {
-                client.invokeAsync(responseFuture -> countDownLatch.countDown());
-            }
+        AtomicLong amount = new AtomicLong();
+        AtomicLong allcast = new AtomicLong();
 
-            // countDownLatch.await(10, TimeUnit.SECONDS);
-            countDownLatch.await();
-            end = System.currentTimeMillis();
-            cast = (end - start);
-            allcast += cast;
+        IntStream.range(0, round).forEach(j -> {
+            long start = System.currentTimeMillis();
+            IntStream.range(0, nums).parallel().forEach(i -> client.invokeSync());
 
-            logger.info("invokeAsync test num is: {}, cast time: {} millsec, throughput: {} send/millsec", NUM, cast, (double) NUM / cast);
-            amount += NUM;
-            // NUM = NUM + 5000;
-            // TimeUnit.SECONDS.sleep(2);
-        }
+            long end = System.currentTimeMillis();
+            long cast = (end - start);
+            allcast.addAndGet(cast);
 
-        logger.info("invokeAsync test all num is: {}, all cast time: {} millsec, all throughput: {} send/millsec", amount, allcast, (double) amount / allcast);
+            logger.info("invokeSync test num is: {}, cast time: {} millsec, throughput: {} send/millsec",
+                    nums, cast, (long) nums / cast);
+            amount.addAndGet(nums);
+        });
+
+        logger.info("invokeSync test all num is: {}, all cast time: {} millsec, all throughput: {} send/millsec",
+                amount, allcast, amount.get() / allcast.get());
     }
 
     @Test
-    public void syncTest() {
-        long start;
-        long end;
-        long cast;
-        long amount = 0;
-        long allcast = 0;
+    public void asyncTest() {
+        int nums = 6000;
+        int round = 10;
 
-        for (int k = 0; k < 10; k++) {
-            start = System.currentTimeMillis();
-            int NUM = 60000;
-            for (int i = 0; i < NUM; i++) {
-                client.invokeSync();
-            }
+        AtomicLong amount = new AtomicLong();
+        AtomicLong allcast = new AtomicLong();
 
-            end = System.currentTimeMillis();
-            cast = (end - start);
-            allcast += cast;
+        IntStream.range(0, round).forEach(j -> {
+            long start = System.currentTimeMillis();
 
-            logger.info("invokeSync test num is: {}, cast time: {} millsec, throughput: {} send/millsec", NUM, cast, (double) NUM / cast);
+            final CountDownLatch countDownLatch = new CountDownLatch(nums);
+            IntStream.range(0, nums).parallel().forEach(i ->
+                    Try.of(() ->
+                            client.invokeAsync(rf -> countDownLatch.countDown())
+                    ).trap(Throwable::printStackTrace).run()
+            );
+            Try.of((Try.ThrowableRunnable) countDownLatch::await).trap(Throwable::printStackTrace).run();
 
-            amount += NUM;
-            // NUM += 5000;
-            // TimeUnit.SECONDS.sleep(2);
-        }
+            long end = System.currentTimeMillis();
+            long cast = (end - start);
+            allcast.addAndGet(cast);
 
-        logger.info("invokeSync test all num is: {}, all cast time: {} millsec, all throughput: {} send/millsec", amount, allcast, (double) amount / allcast);
+            logger.info("invokeAsync test num is: {}, cast time: {} millsec, throughput: {} send/millsec",
+                    nums, cast, (long) nums / cast);
+            amount.addAndGet(nums);
+        });
+
+        logger.info("invokeAsync test all num is: {}, all cast time: {} millsec, all throughput: {} send/millsec",
+                amount, allcast, amount.get() / allcast.get());
     }
 }

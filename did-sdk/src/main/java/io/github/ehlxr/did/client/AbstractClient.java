@@ -138,7 +138,8 @@ public abstract class AbstractClient implements Client {
 
                 Try.of(() -> {
                     logger.debug("write {} to channel", sdkProto);
-                    channelFuture.channel().writeAndFlush(Message.newBuilder().type((byte) 0xA).flag((byte) 0xC).content(sdkProto).build())
+                    channelFuture.channel()
+                            .writeAndFlush(Message.newBuilder().type((byte) 0xA).flag((byte) 0xC).content(sdkProto).build())
                             .addListener(channelFuture -> {
                                 if (channelFuture.isSuccess()) {
                                     return;
