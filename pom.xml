@@ -23,7 +23,7 @@
         <!--目标编译的 Java 版本可以通过以下属性指定，不用配置 maven-compiler-plugin 插件-->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <did.version>1.0.2-SNAPSHOT</did.version>
+        <did.version>1.1.0-SNAPSHOT</did.version>
 
         <netty.version>4.1.58.Final</netty.version>
         <logback.version>1.1.7</logback.version>
