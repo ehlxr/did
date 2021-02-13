@@ -58,9 +58,7 @@ public class ProtostuffSerializer implements Serializer {
             return ProtostuffIOUtil.toByteArray(obj, schema, buffer);
         }).apply(buffer).trap(e -> {
             throw new IllegalStateException(e.getMessage(), e);
-        }).andFinally(b -> {
-            ((LinkedBuffer) b).clear();
-        }).get();
+        }).andFinally(b -> ((LinkedBuffer) b).clear()).get();
     }
 
     @Override

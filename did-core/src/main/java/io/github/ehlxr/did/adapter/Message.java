@@ -87,21 +87,10 @@ public class Message<T> implements Serializable {
     public T getContent() {
         return content;
     }
-    // public int getLength() {
-    //     return getContent().length;
-    // }
-
-    // public byte[] getContent() {
-    //     return Try.<T, byte[]>of(SerializerHolder.get()::serializer).apply(content).get();
-    // }
 
     public void setContent(T content) {
         this.content = content;
     }
-
-    // public T content(Class<T> clazz) {
-    //     return SerializerHolder.get().deserializer(getContent(), clazz);
-    // }
 
     @Override
     public String toString() {
