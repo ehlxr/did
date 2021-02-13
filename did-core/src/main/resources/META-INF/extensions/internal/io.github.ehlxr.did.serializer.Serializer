@@ -1,3 +1,4 @@
-#protostuff1=io.github.ehlxr.did.serializer.ProtostuffSerializer
-protostuff=io.github.ehlxr.did.serializer.ProtostuffSerializer
-io.github.ehlxr.did.serializer.JdkSerializer
+#protostuff1=io.github.ehlxr.did.serializer.impl.ProtostuffSerializer
+protostuff=io.github.ehlxr.did.serializer.impl.ProtostuffSerializer
+io.github.ehlxr.did.serializer.impl.JdkSerializer
+io.github.ehlxr.did.serializer.impl.HessianSerializer

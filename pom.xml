@@ -30,6 +30,7 @@
         <junit.version>4.13.1</junit.version>
         <jackson.version>2.10.3</jackson.version>
         <protostuff.version>1.7.2</protostuff.version>
+        <hessian.version>4.0.65</hessian.version>
     </properties>
 
     <dependencyManagement>
@@ -82,6 +83,13 @@
                 <artifactId>protostuff-runtime</artifactId>
                 <version>${protostuff.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.caucho</groupId>
+                <artifactId>hessian</artifactId>
+                <version>${hessian.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

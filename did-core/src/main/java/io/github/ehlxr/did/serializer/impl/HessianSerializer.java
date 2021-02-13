@@ -22,14 +22,21 @@
  * THE SOFTWARE.
  */
 
-package io.github.ehlxr.did.serializer;
+package io.github.ehlxr.did.serializer.impl;
 
+import com.caucho.hessian.io.HessianInput;
+import com.caucho.hessian.io.HessianOutput;
 import io.github.ehlxr.did.common.Try;
+import io.github.ehlxr.did.serializer.Serializer;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,41 +44,27 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ehlxr
  * @since 2021-02-09 11:07.
  */
-public class ProtostuffSerializer implements Serializer {
-    private static final Map<Class<?>, Schema<?>> CACHED_SCHEMA = new ConcurrentHashMap<>();
-
+public class HessianSerializer implements Serializer {
     @Override
     public <T> byte[] serializer(T obj) {
-        LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
+        return Try.<T, byte[]>of(o -> {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            HessianOutput ho = new HessianOutput(bos);
+            ho.writeObject(obj);
+            ho.flush();
 
-        return Try.<LinkedBuffer, byte[]>of(b -> {
-            //noinspection unchecked
-            Class<T> clazz = (Class<T>) obj.getClass();
-            //noinspection unchecked
-            Schema<T> schema = (Schema<T>) CACHED_SCHEMA.get(clazz);
-            if (schema == null) {
-                schema = RuntimeSchema.getSchema(clazz);
-                CACHED_SCHEMA.put(clazz, schema);
-            }
-
-            return ProtostuffIOUtil.toByteArray(obj, schema, buffer);
-        }).apply(buffer).trap(e -> {
-            throw new IllegalStateException(e.getMessage(), e);
-        }).andFinally(b -> {
-            ((LinkedBuffer) b).clear();
-        }).get();
+            return bos.toByteArray();
+        }).trap(Throwable::printStackTrace).apply(obj).get();
     }
 
     @Override
     public <T> T deserializer(byte[] bytes, Class<T> clazz) {
         return Try.<byte[], T>of(bs -> {
-            Schema<T> schema = RuntimeSchema.getSchema(clazz);
-            T message = schema.newMessage();
+            ByteArrayInputStream bis = new ByteArrayInputStream(bs);
+            HessianInput hi = new HessianInput(bis);
 
-            ProtostuffIOUtil.mergeFrom(bs, message, schema);
-            return message;
-        }).trap(e -> {
-            throw new IllegalStateException(e.getMessage(), e);
-        }).apply(bytes).get();
+            Object o = hi.readObject();
+            return clazz.isInstance(o) ? clazz.cast(o) : null;
+        }).trap(Throwable::printStackTrace).apply(bytes).get();
     }
 }

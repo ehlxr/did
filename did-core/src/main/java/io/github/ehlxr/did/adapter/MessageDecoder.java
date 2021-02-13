@@ -91,6 +91,7 @@ public class MessageDecoder extends LengthFieldBasedFrameDecoder {
         return Message.newBuilder()
                 .type(type)
                 .flag(flag)
+                .length(bytes.length)
                 .content(SerializerHolder.get().deserializer(bytes, SdkProto.class))
                 .build();
     }
