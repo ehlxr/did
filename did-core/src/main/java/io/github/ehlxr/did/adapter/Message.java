@@ -24,9 +24,6 @@
 
 package io.github.ehlxr.did.adapter;
 
-import io.github.ehlxr.did.common.Try;
-import io.github.ehlxr.did.serializer.SerializerHolder;
-
 import java.io.Serializable;
 
 /**
@@ -56,12 +53,6 @@ public class Message<T> implements Serializable {
      */
     private T content;
 
-    public Message(byte type, byte flag, T content) {
-        this.type = type;
-        this.flag = flag;
-        this.content = content;
-    }
-
     public Message() {
     }
 
@@ -86,19 +77,19 @@ public class Message<T> implements Serializable {
     }
 
     public int getLength() {
-        return getContent().length;
+        return length;
     }
 
-    public byte[] getContent() {
-        return Try.<T, byte[]>of(SerializerHolder.get()::serializer).apply(content).get();
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public T getContent() {
+        return content;
     }
 
     public void setContent(T content) {
         this.content = content;
-    }
-
-    public T content(Class<T> clazz) {
-        return SerializerHolder.get().deserializer(getContent(), clazz);
     }
 
     @Override
@@ -114,6 +105,7 @@ public class Message<T> implements Serializable {
     public static final class MessageBuilder<T> {
         private byte type;
         private byte flag;
+        private int length;
         private T content;
 
         private MessageBuilder() {
@@ -129,6 +121,11 @@ public class Message<T> implements Serializable {
             return this;
         }
 
+        public MessageBuilder<T> length(int length) {
+            this.length = length;
+            return this;
+        }
+
         public MessageBuilder<T> content(T content) {
             this.content = content;
             return this;
@@ -138,6 +135,7 @@ public class Message<T> implements Serializable {
             Message<T> message = new Message<>();
             message.setType(type);
             message.setFlag(flag);
+            message.setLength(length);
             message.setContent(content);
             return message;
         }

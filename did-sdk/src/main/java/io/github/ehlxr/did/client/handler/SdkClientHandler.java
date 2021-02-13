@@ -46,10 +46,7 @@ public class SdkClientHandler extends SimpleChannelInboundHandler<Message<SdkPro
     protected void channelRead0(ChannelHandlerContext ctx, Message<SdkProto> message) {
         logger.debug("sdk client handler receive message {}", message);
 
-        SdkProto sdkProto = Try.<Message<SdkProto>, SdkProto>of(m -> m.content(SdkProto.class))
-                .apply(message)
-                .get();
-
+        SdkProto sdkProto = message.getContent();
         final int rqid = sdkProto.getRqid();
         final ResponseFuture responseFuture = Client.REPONSE_MAP.get(rqid);
         if (responseFuture != null) {

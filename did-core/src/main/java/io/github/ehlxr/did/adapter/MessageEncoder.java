@@ -25,6 +25,8 @@
 package io.github.ehlxr.did.adapter;
 
 import io.github.ehlxr.did.SdkProto;
+import io.github.ehlxr.did.common.Try;
+import io.github.ehlxr.did.serializer.SerializerHolder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -40,11 +42,13 @@ public class MessageEncoder extends MessageToByteEncoder<Message<SdkProto>> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Message<SdkProto> msg, ByteBuf out) {
         Objects.requireNonNull(msg, "encode failed 'cause of recive message is null");
+        SdkProto content = msg.getContent();
+        byte[] bytes = Try.<SdkProto, byte[]>of(SerializerHolder.get()::serializer).apply(content).get();
 
         out.writeByte(msg.getType());
         out.writeByte(msg.getFlag());
-        out.writeInt(msg.getLength());
-        out.writeBytes(msg.getContent());
+        out.writeInt(bytes.length);
+        out.writeBytes(bytes);
     }
 }
 

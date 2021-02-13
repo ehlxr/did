@@ -7,7 +7,7 @@
     <groupId>io.github.ehlxr</groupId>
     <artifactId>did-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
     <modules>
         <module>did-server</module>
         <module>did-sdk</module>
@@ -23,13 +23,14 @@
         <!--目标编译的 Java 版本可以通过以下属性指定，不用配置 maven-compiler-plugin 插件-->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <did.version>1.0.2-SNAPSHOT</did.version>
+        <did.version>1.1.1-SNAPSHOT</did.version>
 
         <netty.version>4.1.58.Final</netty.version>
         <logback.version>1.1.7</logback.version>
         <junit.version>4.13.1</junit.version>
         <jackson.version>2.10.3</jackson.version>
         <protostuff.version>1.7.2</protostuff.version>
+        <hessian.version>4.0.65</hessian.version>
     </properties>
 
     <dependencyManagement>
@@ -82,6 +83,13 @@
                 <artifactId>protostuff-runtime</artifactId>
                 <version>${protostuff.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.caucho</groupId>
+                <artifactId>hessian</artifactId>
+                <version>${hessian.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

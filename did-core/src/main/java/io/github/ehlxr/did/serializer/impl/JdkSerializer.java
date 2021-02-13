@@ -22,9 +22,10 @@
  * THE SOFTWARE.
  */
 
-package io.github.ehlxr.did.serializer;
+package io.github.ehlxr.did.serializer.impl;
 
 import io.github.ehlxr.did.common.Try;
+import io.github.ehlxr.did.serializer.Serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
