@@ -7,14 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author ehlxr
  * @since 2021-02-08 22:12.
  */
 public final class SerializerHolder {
-    volatile private static Serializer serializer = null;
+    private volatile static Serializer serializer = null;
     private static final Logger logger = LoggerFactory.getLogger(SerializerHolder.class);
 
     private SerializerHolder() {
