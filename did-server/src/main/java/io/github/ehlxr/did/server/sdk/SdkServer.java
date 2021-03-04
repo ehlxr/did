@@ -24,11 +24,11 @@
 
 package io.github.ehlxr.did.server.sdk;
 
-import io.github.ehlxr.did.generator.SnowFlake;
 import io.github.ehlxr.did.adapter.MessageDecoder;
 import io.github.ehlxr.did.adapter.MessageEncoder;
 import io.github.ehlxr.did.common.Constants;
 import io.github.ehlxr.did.common.Try;
+import io.github.ehlxr.did.generator.SnowFlake;
 import io.github.ehlxr.did.server.BaseServer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;

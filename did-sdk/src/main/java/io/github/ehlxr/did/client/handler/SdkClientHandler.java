@@ -29,7 +29,6 @@ import io.github.ehlxr.did.adapter.Message;
 import io.github.ehlxr.did.client.Client;
 import io.github.ehlxr.did.client.ResponseFuture;
 import io.github.ehlxr.did.common.NettyUtil;
-import io.github.ehlxr.did.common.Try;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;

@@ -25,10 +25,10 @@
 package io.github.ehlxr.did.server.http;
 
 import io.github.ehlxr.did.SdkProto;
-import io.github.ehlxr.did.generator.SnowFlake;
 import io.github.ehlxr.did.common.Constants;
 import io.github.ehlxr.did.common.NettyUtil;
 import io.github.ehlxr.did.common.Result;
+import io.github.ehlxr.did.generator.SnowFlake;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;

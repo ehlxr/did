@@ -37,8 +37,8 @@ import java.util.Objects;
  * @since 2021-02-08 22:12.
  */
 public final class SerializerHolder {
-    private volatile static Serializer serializer = null;
     private static final Logger logger = LoggerFactory.getLogger(SerializerHolder.class);
+    private volatile static Serializer serializer = null;
 
     private SerializerHolder() {
     }

@@ -28,17 +28,9 @@ import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
 import io.github.ehlxr.did.common.Try;
 import io.github.ehlxr.did.serializer.Serializer;
-import io.protostuff.LinkedBuffer;
-import io.protostuff.ProtostuffIOUtil;
-import io.protostuff.Schema;
-import io.protostuff.runtime.RuntimeSchema;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author ehlxr

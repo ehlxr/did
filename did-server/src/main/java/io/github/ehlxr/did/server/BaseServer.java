@@ -24,8 +24,8 @@
 
 package io.github.ehlxr.did.server;
 
-import io.github.ehlxr.did.generator.SnowFlake;
 import io.github.ehlxr.did.common.Try;
+import io.github.ehlxr.did.generator.SnowFlake;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
