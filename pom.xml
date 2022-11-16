@@ -28,7 +28,7 @@
         <netty.version>4.1.58.Final</netty.version>
         <logback.version>1.2.0</logback.version>
         <junit.version>4.13.1</junit.version>
-        <jackson.version>2.12.1</jackson.version>
+        <jackson.version>2.12.7.1</jackson.version>
         <protostuff.version>1.7.2</protostuff.version>
         <hessian.version>4.0.65</hessian.version>
     </properties>
