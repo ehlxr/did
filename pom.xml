@@ -26,7 +26,7 @@
         <did.version>1.1.1-SNAPSHOT</did.version>
 
         <netty.version>4.1.58.Final</netty.version>
-        <logback.version>1.2.0</logback.version>
+        <logback.version>1.2.13</logback.version>
         <junit.version>4.13.1</junit.version>
         <jackson.version>2.12.1</jackson.version>
         <protostuff.version>1.7.2</protostuff.version>
